@@ -16,6 +16,7 @@ class Vector {
 
 var v = new Vector(1,1);
 v--;
+v += 12;
 `;
 
 it('works', () => {

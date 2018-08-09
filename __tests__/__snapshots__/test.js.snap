@@ -69,5 +69,12 @@ v = function (_arg2) {
     var result = _unary(_arg2, key);
 
     return typeof result !== 'undefined' ? result : --_arg2;
-}(v);"
+}(v);
+v = function (_left4, _right4) {
+    var key = Symbol.for('binary.+=');
+
+    var result = _binary(_left4, _right4, key);
+
+    return typeof result !== 'undefined' ? result : _left4 += _right4;
+}(v, 12);"
 `;

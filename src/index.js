@@ -105,6 +105,19 @@ export default function({types: t}) {
                 })).expression;
                 console.log(path.node);
                 path.replaceWith( t.assignmentExpression("=", path.node.argument, t.callExpression(operation, [path.node.argument])));
+            },
+
+            AssignmentExpression(path) {
+                if (path.node.hasOwnProperty('_fromTemplate')) return
+                if (path.node.operator !== '+=' && path.node.operator !== '-=') return
+                
+                let op = binaryOperation(path.node.operator, this.binary)
+                let operation = (op({
+                    LEFT: path.scope.generateUidIdentifier("left"),
+                    RIGHT: path.scope.generateUidIdentifier("right"),
+                })).expression;
+
+                path.replaceWith( t.assignmentExpression("=", path.node.left, t.callExpression(operation, [path.node.left, path.node.right])))
             }
         }
     }
