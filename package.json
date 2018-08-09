@@ -1,0 +1,24 @@
+{
+  "name": "babel-operators",
+  "version": "1.0.0",
+  "description": "A Babel compiler plugin providing support for operator overloading.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src/index.js --out-dir dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dboikliev/babel-operators.git"
+  },
+  "author": "Deyan Boikliev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dboikliev/babel-operators/issues"
+  },
+  "homepage": "https://github.com/dboikliev/babel-operators#readme",
+  "devDependencies": {
+    "babel-preset-env": "^1.7.0",
+    "babel-template": "^6.26.0"
+  }
+}
