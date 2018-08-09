@@ -4,7 +4,7 @@
   "description": "A Babel compiler plugin providing support for operator overloading.",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest -u",
     "build": "babel src --out-dir dist"
   },
   "jest": {
