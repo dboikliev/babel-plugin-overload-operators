@@ -1,52 +1,73 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`works 1`] = `
-"import * as _Op from './operators';
+"'use strict';
 
-import Op from 'operators';
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\\"value\\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-class Vector {
-    constructor(x, y) {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\\"Cannot call a class as a function\\"); } }
+
+function _unary(_arg, _key2) {
+    var proto = Object.getPrototypeOf(_arg);
+    var op = proto.constructor[_key2];
+
+    if (op && op.length === 1) {
+        return op(_arg);
+    }
+}
+
+function _binary(_left, _right, _key) {
+    var leftProto = Object.getPrototypeOf(_left);
+    var leftOp = leftProto.constructor[_key];
+
+    if (leftOp && leftOp.length === 2) {
+        return leftOp(_left, _right);
+    }
+
+    var rightProto = Object.getPrototypeOf(_right);
+    var rightOp = rightProto.constructor[_key];
+
+    if (rightOp && rightOp.length === 2) {
+        return rightOp(_left, _right);
+    }
+}
+
+var Vector = function () {
+    function Vector(x, y) {
+        _classCallCheck(this, Vector);
+
         thix.x = x;
         this.y = y;
     }
 
-    static [Op.binary['+']](a, b) {
-        return new Vector(function (_left, _right) {
-            const key = _Op.default.binary['+'];
-            const leftProto = Object.getPrototypeOf(_left);
-            const leftOp = leftProto.constructor[key];
+    _createClass(Vector, null, [{
+        key: Symbol.for('unary.+'),
+        value: function value(a, b) {
+            return new Vector(function (_left2, _right2) {
+                var key = Symbol.for('binary.+');
 
-            if (leftOp && leftOp.length === 2) {
-                return leftOp(_left, _right);
-            }
+                var result = _binary(_left2, _right2, key);
 
-            const rightProto = Object.getPrototypeOf(_right);
-            const rightOp = rightProto.constructor[key];
+                return typeof result !== 'undefined' ? result : _left2 + _right2;
+            }(a.x, b.x), function (_left3, _right3) {
+                var key = Symbol.for('binary.+');
 
-            if (rightOp && rightOp.length === 2) {
-                return rightOp(_left, _right);
-            }
+                var result = _binary(_left3, _right3, key);
 
-            return _left + _right;
-        }(a.x, b.x), function (_left2, _right2) {
-            const key = _Op.default.binary['+'];
-            const leftProto = Object.getPrototypeOf(_left2);
-            const leftOp = leftProto.constructor[key];
+                return typeof result !== 'undefined' ? result : _left3 + _right3;
+            }(a.y, b.y));
+        }
+    }]);
 
-            if (leftOp && leftOp.length === 2) {
-                return leftOp(_left2, _right2);
-            }
+    return Vector;
+}();
 
-            const rightProto = Object.getPrototypeOf(_right2);
-            const rightOp = rightProto.constructor[key];
+var v = new Vector(1, 1);
+v = function (_arg2) {
+    var key = Symbol.for('unary.--');
 
-            if (rightOp && rightOp.length === 2) {
-                return rightOp(_left2, _right2);
-            }
+    var result = _unary(_arg2, key);
 
-            return _left2 + _right2;
-        }(a.y, b.y));
-    }
-}"
+    return typeof result !== 'undefined' ? result : --_arg2;
+}(v);"
 `;

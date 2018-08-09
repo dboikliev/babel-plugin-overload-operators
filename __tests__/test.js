@@ -3,21 +3,22 @@ import plugin from '../dist/index';
 import assert from 'assert';
 
 const example = `
-import Op from 'operators'
-
 class Vector {
     constructor(x, y) {
         thix.x = x;
         this.y = y; 
     }
 
-    static [Op.binary['+']](a, b) {
+    static [Symbol.for('unary.+')](a, b) {
         return new Vector(a.x + b.x, a.y + b.y);
     }
 }
+
+var v = new Vector(1,1);
+v--;
 `;
 
 it('works', () => {
-  const {code} = babel.transform(example, {plugins: [plugin]});
+  const {code} = babel.transform(example, {plugins: [plugin], presets: ["env"]});
   expect(code).toMatchSnapshot();
 });
