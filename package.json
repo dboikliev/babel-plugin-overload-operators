@@ -4,8 +4,11 @@
   "description": "A Babel compiler plugin providing support for operator overloading.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src/index.js --out-dir dist"
+    "test": "jest",
+    "build": "babel src --out-dir dist"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "repository": {
     "type": "git",
@@ -18,7 +21,9 @@
   },
   "homepage": "https://github.com/dboikliev/babel-operators#readme",
   "devDependencies": {
+    "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
-    "babel-template": "^6.26.0"
+    "babel-template": "^6.26.0",
+    "jest": "^23.4.2"
   }
 }

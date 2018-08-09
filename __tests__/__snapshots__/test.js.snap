@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`works 1`] = `
+"import * as _Op from './operators';
+
+import Op from 'operators';
+
+class Vector {
+    constructor(x, y) {
+        thix.x = x;
+        this.y = y;
+    }
+
+    static [Op.binary['+']](a, b) {
+        return new Vector(function (_left, _right) {
+            const key = _Op.default.binary['+'];
+            const leftProto = Object.getPrototypeOf(_left);
+            const leftOp = leftProto.constructor[key];
+
+            if (leftOp && leftOp.length === 2) {
+                return leftOp(_left, _right);
+            }
+
+            const rightProto = Object.getPrototypeOf(_right);
+            const rightOp = rightProto.constructor[key];
+
+            if (rightOp && rightOp.length === 2) {
+                return rightOp(_left, _right);
+            }
+
+            return _left + _right;
+        }(a.x, b.x), function (_left2, _right2) {
+            const key = _Op.default.binary['+'];
+            const leftProto = Object.getPrototypeOf(_left2);
+            const leftOp = leftProto.constructor[key];
+
+            if (leftOp && leftOp.length === 2) {
+                return leftOp(_left2, _right2);
+            }
+
+            const rightProto = Object.getPrototypeOf(_right2);
+            const rightOp = rightProto.constructor[key];
+
+            if (rightOp && rightOp.length === 2) {
+                return rightOp(_left2, _right2);
+            }
+
+            return _left2 + _right2;
+        }(a.y, b.y));
+    }
+}"
+`;
