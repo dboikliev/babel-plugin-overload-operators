@@ -5,13 +5,15 @@ function defineBinary() {
         const leftProto = Object.getPrototypeOf(LEFT);
         const leftOp = leftProto.constructor[KEY];
         if (leftOp && leftOp.length === 2) {
-            return leftOp(LEFT, RIGHT);
+            return { result: leftOp.call(leftProto.constructor, LEFT, RIGHT), hasOp: true };
         }
         const rightProto = Object.getPrototypeOf(RIGHT);
         const rightOp = rightProto.constructor[KEY];
         if (rightOp && rightOp.length === 2) {
-            return rightOp(LEFT, RIGHT);
+            return { result: rightOp.call(rightProto.constructor, LEFT, RIGHT), hasOp: true };
         }
+
+        return { hasOp: false }
     }`)
 }
 
@@ -20,8 +22,9 @@ function defineUnary() {
         const proto = Object.getPrototypeOf(ARG);
         const op = proto.constructor[KEY];
         if (op && op.length === 1) {
-            return op(ARG);
+            return { result: op.call(proto.constructor, ARG), hasOp: true };
         }
+        return {hasOp: false};
     }`)
 }
 
@@ -29,8 +32,8 @@ function binaryOperation(operator, binaryOp) {
     const buildCall = template(`
         (function (LEFT, RIGHT) {
             const key = Symbol.for('binary.${operator}');
-            const result = ${binaryOp}(LEFT, RIGHT, key)
-            return typeof result !== 'undefined' ? result :  LEFT ${operator} RIGHT;
+            const {result, hasOp} =  ${binaryOp}(LEFT, RIGHT, key)
+            return hasOp ? result : LEFT ${operator} RIGHT;
         })
     `);
     return buildCall;
@@ -40,8 +43,8 @@ function unaryOperation(operator, unaryOp) {
     const buildCall = template(`
         (function (ARG) {
             const key = Symbol.for('unary.${operator}');
-            const result = ${unaryOp}(ARG, key);
-            return typeof result !== 'undefined' ? result : ${operator}ARG;
+            const {result, hasOp} = ${unaryOp}(ARG, key);
+            return hasOp ? result : ${operator} ARG;
         })
     `);
     return buildCall;
@@ -88,12 +91,14 @@ export default function({types: t}) {
             },
             
             UnaryExpression(path) {
-                if (path.node.hasOwnProperty('_fromTemplate')) return
+                if (path.node.hasOwnProperty('_fromTemplate')) {
+                    path.skip();
+                    return;
+                }
                 let op = unaryOperation(path.node.operator, this.unary)
                 let operation = (op({
                     ARG: path.scope.generateUidIdentifier("arg"),
                 })).expression;
-                console.log(path.node);
                 path.replaceWith(t.callExpression(operation, [path.node.argument]))
             },
 
@@ -103,14 +108,17 @@ export default function({types: t}) {
                 let operation = (op({
                     ARG: path.scope.generateUidIdentifier("arg"),
                 })).expression;
-                console.log(path.node);
                 path.replaceWith( t.assignmentExpression("=", path.node.argument, t.callExpression(operation, [path.node.argument])));
             },
 
             AssignmentExpression(path) {
                 if (path.node.hasOwnProperty('_fromTemplate')) return
-                if (path.node.operator !== '+=' && path.node.operator !== '-=') return
-                
+                const operator = path.node.operator;
+                if (operator !== '+=' && operator !== '-=' &&
+                    operator !== '*=' && operator !== '~=' &&
+                    operator !== '/=' && operator !== '%=') {
+                    return;
+                }
                 let op = binaryOperation(path.node.operator, this.binary)
                 let operation = (op({
                     LEFT: path.scope.generateUidIdentifier("left"),
