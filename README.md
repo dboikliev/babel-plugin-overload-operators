@@ -1,6 +1,6 @@
 # babel-operators
 
-This projects builds a babel compiler plugin allowing babel users to write more consise and readable code through the use of operator overloading.
+This projects builds a babel compiler plugin allowing users to write more consise and readable code through the use of operator overloading.
 
 ## Supported operators 
 
