@@ -2,15 +2,20 @@ import template from "babel-template";
 
 function defineBinary() {
     return template(`function __binary(LEFT, RIGHT, KEY) {
-        const leftProto = Object.getPrototypeOf(LEFT);
-        const leftOp = leftProto.constructor[KEY];
-        if (leftOp && leftOp.length === 2) {
-            return { result: leftOp.call(leftProto.constructor, LEFT, RIGHT), hasOp: true };
+        if (typeof LEFT !== 'undefined') {
+            const leftProto = Object.getPrototypeOf(LEFT);
+            const leftOp = leftProto.constructor[KEY];
+            if (leftOp && leftOp.length === 2) {
+                return { result: leftOp.call(leftProto.constructor, LEFT, RIGHT), hasOp: true };
+            }
         }
-        const rightProto = Object.getPrototypeOf(RIGHT);
-        const rightOp = rightProto.constructor[KEY];
-        if (rightOp && rightOp.length === 2) {
-            return { result: rightOp.call(rightProto.constructor, LEFT, RIGHT), hasOp: true };
+
+        if (typeof RIGHT !== 'undefined') {
+            const rightProto = Object.getPrototypeOf(RIGHT);
+            const rightOp = rightProto.constructor[KEY];
+            if (rightOp && rightOp.length === 2) {
+                return { result: rightOp.call(rightProto.constructor, LEFT, RIGHT), hasOp: true };
+            }
         }
 
         return { hasOp: false }
@@ -19,10 +24,12 @@ function defineBinary() {
 
 function defineUnary() {
     return template(`function __unary(ARG, KEY) {
-        const proto = Object.getPrototypeOf(ARG);
-        const op = proto.constructor[KEY];
-        if (op && op.length === 1) {
-            return { result: op.call(proto.constructor, ARG), hasOp: true };
+        if (typeof ARG !== undefined) {
+            const proto = Object.getPrototypeOf(ARG);
+            const op = proto.constructor[KEY];
+            if (op && op.length === 1) {
+                return { result: op.call(proto.constructor, ARG), hasOp: true };
+            }
         }
         return {hasOp: false};
     }`)
@@ -79,7 +86,10 @@ export default function({types: t}) {
             },
 
             BinaryExpression(path) {
-                if (path.node.hasOwnProperty('_fromTemplate')) return
+                if (path.node.hasOwnProperty('_fromTemplate')) {
+                    path.skip();
+                    return
+                }
 
                 let op = binaryOperation(path.node.operator, this.binary)
                 let operation = (op({
@@ -103,7 +113,11 @@ export default function({types: t}) {
             },
 
             UpdateExpression(path) {
-                if (path.node.hasOwnProperty('_fromTemplate')) return
+                if (path.node.hasOwnProperty('_fromTemplate')) {
+                    path.skip();
+                    return
+                }
+
                 let op = unaryOperation(path.node.operator, this.unary)
                 let operation = (op({
                     ARG: path.scope.generateUidIdentifier("arg"),
@@ -112,7 +126,11 @@ export default function({types: t}) {
             },
 
             AssignmentExpression(path) {
-                if (path.node.hasOwnProperty('_fromTemplate')) return
+                if (path.node.hasOwnProperty('_fromTemplate')) {
+                    path.skip();
+                    return
+                }
+
                 const operator = path.node.operator;
                 if (operator !== '+=' && operator !== '-=' &&
                     operator !== '*=' && operator !== '~=' &&
@@ -126,6 +144,12 @@ export default function({types: t}) {
                 })).expression;
 
                 path.replaceWith( t.assignmentExpression("=", path.node.left, t.callExpression(operation, [path.node.left, path.node.right])))
+            },
+
+            TemplateLiteral(path) {
+                path.node.expressions = path.node.expressions && path.node.expressions.map(e => {
+                    return t.callExpression(t.memberExpression(e, t.identifier('toString')),[]);
+                })
             }
         }
     }
