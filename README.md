@@ -5,7 +5,7 @@ This projects builds a babel compiler plugin allowing users to write more consis
 ## Supported operators 
 
 Binary:
-`+, -, *, /, %, =, +=, -=, *=, /=, %= |, &, ^, ||, &&, ==, ===, !=, !==, >, <, >=, <=`
+`+, -, *, /, %, +=, -=, *=, /=, %= |, &, ^, ||, &&, ==, ===, !=, !==, >, <, >=, <=`
 
 Unary:
 `+, -, ++, --, ~, !, typeof`
