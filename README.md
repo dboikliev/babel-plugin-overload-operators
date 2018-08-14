@@ -41,7 +41,7 @@ class Vector {
     static [Symbol.for('unary.-')](v) {
       return new Vector(-v.x, -v.y);
     }
-  }
+ }
 
 let v = new Vector(1, 5);
 console.log(v * 5); // Vector { x: -5, y: -25 }
