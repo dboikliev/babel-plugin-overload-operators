@@ -35,24 +35,56 @@ function defineUnary() {
     }`)
 }
 
-function binaryOperation(operator, binaryOp) {
+function bop(binaryOp) {
     const buildCall = template(`
-        (function (LEFT, RIGHT) {
-            const key = Symbol.for('binary.${operator}');
-            const {result, hasOp} =  ${binaryOp}(LEFT, RIGHT, key)
-            return hasOp ? result : LEFT ${operator} RIGHT;
-        })
+        function _bop(LEFT, RIGHT, OPERATOR) {
+            const primitives = {
+                '+'(a, b) { return a + b },
+                '-'(a, b) { return a - b },
+                '*'(a, b) { return a * b },
+                '/'(a, b) { return a / b },
+                '^'(a, b) { return a ^ b },
+                '|'(a, b) { return a | b },
+                '&'(a, b) { return a & b },
+                '||'(a, b) { return a || b },
+                '&&'(a, b) { return a && b },
+                '=='(a, b) { return a == b },
+                '!='(a, b) { return a != b },
+                '==='(a, b) { return a === b },
+                '!=='(a, b) { return a !== b },
+                '+='(a, b) { return a + b },
+                '-='(a, b) { return a - b },
+                '*='(a, b) { return a * b },
+                '/='(a, b) { return a * b },
+                '='(a, b) { return b }
+            }
+
+            const key = Symbol.for(\`binary.\${OPERATOR}\`);
+            const {result, hasOp} = ${binaryOp}(LEFT, RIGHT, key)
+            return hasOp ? result : primitives[OPERATOR](LEFT, RIGHT);
+        }
     `);
     return buildCall;
 }
 
-function unaryOperation(operator, unaryOp) {
+
+function uop(unaryOp) {
     const buildCall = template(`
-        (function (ARG) {
-            const key = Symbol.for('unary.${operator}');
+        function _uop(ARG, OPERATOR) {
+            const primitives = {
+                '+'(a) { return +a },
+                '-'(a) { return -a },
+                '++'(a) { return a++ },
+                '--'(a) { return a-- },
+                '~'(a) { return ~a },
+                '!'(a) { return !a },
+                'typeof'(a) { return typeof a }
+            }
+
+            const key = Symbol.for(\`unary.\${OPERATOR}\`);
             const {result, hasOp} = ${unaryOp}(ARG, key);
-            return hasOp ? result : ${operator} ARG;
-        })
+            return hasOp ? result : primitives[OPERATOR](ARG);
+        }
     `);
     return buildCall;
 }
@@ -75,14 +107,34 @@ export default function({types: t}) {
                     KEY: path.scope.generateUidIdentifier("key")
                 })
                 
-                binaryNode.id.name = path.scope.generateUidIdentifierBasedOnNode(binaryNode.id).name;
-                unaryNode.id.name = path.scope.generateUidIdentifierBasedOnNode(unaryNode.id).name;
+                binaryNode.id = path.scope.generateUidIdentifierBasedOnNode(binaryNode.id);
+                unaryNode.id = path.scope.generateUidIdentifierBasedOnNode(unaryNode.id);
 
-                this.binary = binaryNode.id.name;
-                this.unary = unaryNode.id.name;
-          
+                this.bop = bop(binaryNode.id.name)({
+                    LEFT: path.scope.generateUidIdentifier("left"),
+                    RIGHT: path.scope.generateUidIdentifier("right"),
+                    OPERATOR: path.scope.generateUidIdentifier("operator")
+                })
+
+                this.uop = uop(unaryNode.id.name)({
+                    ARG: path.scope.generateUidIdentifier("arg"),
+                    OPERATOR: path.scope.generateUidIdentifier("operator")
+                })
+                console.log(this.uop);
+                this.bop.id = path.scope.generateUidIdentifierBasedOnNode(this.bop.id);
+                this.uop.id = path.scope.generateUidIdentifierBasedOnNode(this.uop.id);
+
                 path.unshiftContainer('body', binaryNode);
                 path.unshiftContainer('body', unaryNode);
+                path.unshiftContainer('body', this.bop);
+                path.unshiftContainer('body', this.uop);
+            },
+
+            FunctionDeclaration(path) {
+                if (path.node.id.name === this.bop.id.name ||
+                    path.node.id.name === this.uop.id.name) {
+                    path.skip();
+                }
             },
 
             BinaryExpression(path) {
@@ -91,13 +143,7 @@ export default function({types: t}) {
                     return
                 }
 
-                let op = binaryOperation(path.node.operator, this.binary)
-                let operation = (op({
-                    LEFT: path.scope.generateUidIdentifier("left"),
-                    RIGHT: path.scope.generateUidIdentifier("right"),
-                })).expression;
-
-                path.replaceWith(t.callExpression(operation, [path.node.left, path.node.right]))
+                path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(path.node.operator)]))
             },
             
             UnaryExpression(path) {
@@ -105,30 +151,25 @@ export default function({types: t}) {
                     path.skip();
                     return;
                 }
-                let op = unaryOperation(path.node.operator, this.unary)
-                let operation = (op({
-                    ARG: path.scope.generateUidIdentifier("arg"),
-                })).expression;
-                path.replaceWith(t.callExpression(operation, [path.node.argument]))
+
+                const op = t.stringLiteral(path.node.operator);
+                path.replaceWith(t.callExpression(this.uop.id, [path.node.argument, op]))
             },
 
             UpdateExpression(path) {
                 if (path.node.hasOwnProperty('_fromTemplate')) {
                     path.skip();
-                    return
+                    return;
                 }
 
-                let op = unaryOperation(path.node.operator, this.unary)
-                let operation = (op({
-                    ARG: path.scope.generateUidIdentifier("arg"),
-                })).expression;
-                path.replaceWith( t.assignmentExpression("=", path.node.argument, t.callExpression(operation, [path.node.argument])));
+                const op = t.stringLiteral(path.node.operator);
+                path.replaceWith(t.assignmentExpression("=", path.node.argument, t.callExpression(this.uop.id, [path.node.argument, op])));
             },
 
             AssignmentExpression(path) {
                 if (path.node.hasOwnProperty('_fromTemplate')) {
                     path.skip();
-                    return
+                    return;
                 }
 
                 const operator = path.node.operator;
@@ -137,13 +178,11 @@ export default function({types: t}) {
                     operator !== '/=' && operator !== '%=') {
                     return;
                 }
-                let op = binaryOperation(path.node.operator, this.binary)
-                let operation = (op({
-                    LEFT: path.scope.generateUidIdentifier("left"),
-                    RIGHT: path.scope.generateUidIdentifier("right"),
-                })).expression;
-
-                path.replaceWith( t.assignmentExpression("=", path.node.left, t.callExpression(operation, [path.node.left, path.node.right])))
+                
+                const op = t.stringLiteral(path.node.operator.substring(0, 1));
+                console.log(op);
+                const bopCall = t.callExpression(this.bop.id, [path.node.left, path.node.right, op]);
+                path.replaceWith(t.assignmentExpression("=", path.node.left, bopCall))
             },
 
             TemplateLiteral(path) {

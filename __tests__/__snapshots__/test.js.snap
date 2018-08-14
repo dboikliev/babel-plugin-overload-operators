@@ -7,15 +7,27 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\\"Cannot call a class as a function\\"); } }
 
-function _unary(_arg, _key2) {
-    var proto = Object.getPrototypeOf(_arg);
-    var op = proto.constructor[_key2];
+function _bop(_left2, _right2, _operator) {
+    var key = Symbol.for(_bop('binary.', _operator.toString(), '+'));
 
-    if (op && op.length === 1) {
-        return {
-            result: op(_arg),
-            hasOp: true
-        };
+    var _undefined = undefined(_left2, _right2, key),
+        result = _undefined.result,
+        hasOp = _undefined.hasOp;
+
+    return hasOp ? result : eval([_left2, _right2].join(_operator));
+}
+
+function _unary(_arg, _key2) {
+    if (typeof _arg !== undefined) {
+        var proto = Object.getPrototypeOf(_arg);
+        var op = proto.constructor[_key2];
+
+        if (op && op.length === 1) {
+            return {
+                result: op.call(proto.constructor, _arg),
+                hasOp: true
+            };
+        }
     }
 
     return {
@@ -24,24 +36,28 @@ function _unary(_arg, _key2) {
 }
 
 function _binary(_left, _right, _key) {
-    var leftProto = Object.getPrototypeOf(_left);
-    var leftOp = leftProto.constructor[_key];
+    if (typeof _left !== 'undefined') {
+        var leftProto = Object.getPrototypeOf(_left);
+        var leftOp = leftProto.constructor[_key];
 
-    if (leftOp && leftOp.length === 2) {
-        return {
-            result: leftOp(_left, _right),
-            hasOp: true
-        };
+        if (leftOp && leftOp.length === 2) {
+            return {
+                result: leftOp.call(leftProto.constructor, _left, _right),
+                hasOp: true
+            };
+        }
     }
 
-    var rightProto = Object.getPrototypeOf(_right);
-    var rightOp = rightProto.constructor[_key];
+    if (typeof _right !== 'undefined') {
+        var rightProto = Object.getPrototypeOf(_right);
+        var rightOp = rightProto.constructor[_key];
 
-    if (rightOp && rightOp.length === 2) {
-        return {
-            result: rightOp(_left, _right),
-            hasOp: true
-        };
+        if (rightOp && rightOp.length === 2) {
+            return {
+                result: rightOp.call(rightProto.constructor, _left, _right),
+                hasOp: true
+            };
+        }
     }
 
     return {
@@ -60,23 +76,7 @@ var Vector = function () {
     _createClass(Vector, null, [{
         key: Symbol.for('unary.+'),
         value: function value(a, b) {
-            return new Vector(function (_left2, _right2) {
-                var key = Symbol.for('binary.+');
-
-                var _binary2 = _binary(_left2, _right2, key),
-                    result = _binary2.result,
-                    hasOp = _binary2.hasOp;
-
-                return hasOp ? result : _left2 + _right2;
-            }(a.x, b.x), function (_left3, _right3) {
-                var key = Symbol.for('binary.+');
-
-                var _binary3 = _binary(_left3, _right3, key),
-                    result = _binary3.result,
-                    hasOp = _binary3.hasOp;
-
-                return hasOp ? result : _left3 + _right3;
-            }(a.y, b.y));
+            return new Vector(_bop(a.x, b.x, '+'), _bop(a.y, b.y, '+'));
         }
     }]);
 
@@ -93,13 +93,5 @@ v = function (_arg2) {
 
     return hasOp ? result : --_arg2;
 }(v);
-v = function (_left4, _right4) {
-    var key = Symbol.for('binary.+=');
-
-    var _binary4 = _binary(_left4, _right4, key),
-        result = _binary4.result,
-        hasOp = _binary4.hasOp;
-
-    return hasOp ? result : _left4 += _right4;
-}(v, 12);"
+v = _bop(v, 12, '+=');"
 `;
