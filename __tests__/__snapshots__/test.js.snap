@@ -7,14 +7,130 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\\"Cannot call a class as a function\\"); } }
 
+function _uop(_arg2, _operator2) {
+    const primitives = {
+        '+'(a) {
+            return +a;
+        },
+
+        '-'(a) {
+            return -a;
+        },
+
+        '++'(a) {
+            return a++;
+        },
+
+        '--'(a) {
+            return a--;
+        },
+
+        '~'(a) {
+            return ~a;
+        },
+
+        '!'(a) {
+            return !a;
+        },
+
+        'typeof'(a) {
+            return typeof a;
+        }
+
+    };
+    const key = Symbol.for(\`unary.\${_operator2}\`);
+
+    const {
+        result,
+        hasOp
+    } = _unary(_arg2, key);
+
+    return hasOp ? result : primitives[_operator2](_arg2);
+}
+
 function _bop(_left2, _right2, _operator) {
-    var key = Symbol.for(_bop('binary.', _operator.toString(), '+'));
+    const primitives = {
+        '+'(a, b) {
+            return a + b;
+        },
 
-    var _undefined = undefined(_left2, _right2, key),
-        result = _undefined.result,
-        hasOp = _undefined.hasOp;
+        '-'(a, b) {
+            return a - b;
+        },
 
-    return hasOp ? result : eval([_left2, _right2].join(_operator));
+        '*'(a, b) {
+            return a * b;
+        },
+
+        '/'(a, b) {
+            return a / b;
+        },
+
+        '^'(a, b) {
+            return a ^ b;
+        },
+
+        '|'(a, b) {
+            return a | b;
+        },
+
+        '&'(a, b) {
+            return a & b;
+        },
+
+        '||'(a, b) {
+            return a || b;
+        },
+
+        '&&'(a, b) {
+            return a && b;
+        },
+
+        '=='(a, b) {
+            return a == b;
+        },
+
+        '!='(a, b) {
+            return a != b;
+        },
+
+        '==='(a, b) {
+            return a === b;
+        },
+
+        '!=='(a, b) {
+            return a !== b;
+        },
+
+        '+='(a, b) {
+            return a + b;
+        },
+
+        '-='(a, b) {
+            return a - b;
+        },
+
+        '*='(a, b) {
+            return a * b;
+        },
+
+        '/='(a, b) {
+            return a * b;
+        },
+
+        '='(a, b) {
+            return b;
+        }
+
+    };
+    const key = Symbol.for(\`binary.\${_operator}\`);
+
+    const {
+        result,
+        hasOp
+    } = _binary(_left2, _right2, key);
+
+    return hasOp ? result : primitives[_operator](_left2, _right2);
 }
 
 function _unary(_arg, _key2) {
@@ -84,14 +200,6 @@ var Vector = function () {
 }();
 
 var v = new Vector(1, 1);
-v = function (_arg2) {
-    var key = Symbol.for('unary.--');
-
-    var _unary2 = _unary(_arg2, key),
-        result = _unary2.result,
-        hasOp = _unary2.hasOp;
-
-    return hasOp ? result : --_arg2;
-}(v);
-v = _bop(v, 12, '+=');"
+v = _uop(v, '--');
+v = _bop(v, 12, '+');"
 `;

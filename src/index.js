@@ -179,8 +179,7 @@ export default function({types: t}) {
                     return;
                 }
                 
-                const op = t.stringLiteral(path.node.operator.substring(0, 1));
-                console.log(op);
+                const op = t.stringLiteral(operator.substring(0, 1));
                 const bopCall = t.callExpression(this.bop.id, [path.node.left, path.node.right, op]);
                 path.replaceWith(t.assignmentExpression("=", path.node.left, bopCall))
             },
