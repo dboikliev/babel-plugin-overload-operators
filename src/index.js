@@ -59,9 +59,13 @@ function bop(binaryOp) {
                 '/='(a, b) { return a * b },
                 '%='(a, b) { return a * b },
                 '>'(a, b) { return a > b },
-                '>='(a, b) { return a > b },
-                '<'(a, b) { return a > b },
-                '<='(a, b) { return a > b },
+                '>='(a, b) { return a >= b },
+                '<'(a, b) { return a < b },
+                '<='(a, b) { return a <= b },
+                '>>'(a, b) { return a >> b },
+                '>>='(a, b) { return a >>= b },
+                '<<'(a, b) { return a << b },
+                '<<='(a, b) { return a <<= b },
             }
 
             const key = Symbol.for(\`binary.\${OPERATOR}\`);
