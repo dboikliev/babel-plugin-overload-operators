@@ -83,7 +83,8 @@ function uop(unaryOp) {
                 '--'(a) { return a-- },
                 '~'(a) { return ~a },
                 '!'(a) { return !a },
-                'typeof'(a) { return typeof a }
+                'typeof'(a) { return typeof a },
+                'void'(a) { return void a }
             }
 
             const key = Symbol.for(\`unary.\${OPERATOR}\`);
@@ -125,7 +126,7 @@ export default function({types: t}) {
                     ARG: path.scope.generateUidIdentifier("arg"),
                     OPERATOR: path.scope.generateUidIdentifier("operator")
                 })
-                console.log(this.uop);
+                
                 this.bop.id = path.scope.generateUidIdentifierBasedOnNode(this.bop.id);
                 this.uop.id = path.scope.generateUidIdentifierBasedOnNode(this.uop.id);
 
