@@ -35,63 +35,67 @@ function defineUnary() {
     }`)
 }
 
-function bop(binaryOp) {
+function defineBinaryPrimitives() {
+    return template(`const __binary__primitives = {
+        '+'(a, b) { return a + b },
+        '-'(a, b) { return a - b },
+        '*'(a, b) { return a * b },
+        '/'(a, b) { return a / b },
+        '%'(a, b) { return a / b },
+        '^'(a, b) { return a ^ b },
+        '|'(a, b) { return a | b },
+        '&'(a, b) { return a & b },
+        '||'(a, b) { return a || b },
+        '&&'(a, b) { return a && b },
+        '=='(a, b) { return a == b },
+        '!='(a, b) { return a != b },
+        '==='(a, b) { return a === b },
+        '!=='(a, b) { return a !== b },
+        '+='(a, b) { return a + b },
+        '-='(a, b) { return a - b },
+        '*='(a, b) { return a * b },
+        '/='(a, b) { return a * b },
+        '%='(a, b) { return a * b },
+        '>'(a, b) { return a > b },
+        '>='(a, b) { return a >= b },
+        '<'(a, b) { return a < b },
+        '<='(a, b) { return a <= b },
+        '>>'(a, b) { return a >> b },
+        '<<'(a, b) { return a << b },
+    }`);
+}
+
+function defineUnaryPrimitives() {
+    return template(`const __unary__primitives = {
+        '+'(a) { return +a },
+        '-'(a) { return -a },
+        '++'(a) { return a++ },
+        '--'(a) { return a-- },
+        '~'(a) { return ~a },
+        '!'(a) { return !a },
+        'typeof'(a) { return typeof a },
+        'void'(a) { return void a }
+    }`);
+}
+
+function bop(binaryOp, primitivesId) {
     const buildCall = template(`
         function _bop(LEFT, RIGHT, OPERATOR) {
-            const primitives = {
-                '+'(a, b) { return a + b },
-                '-'(a, b) { return a - b },
-                '*'(a, b) { return a * b },
-                '/'(a, b) { return a / b },
-                '%'(a, b) { return a / b },
-                '^'(a, b) { return a ^ b },
-                '|'(a, b) { return a | b },
-                '&'(a, b) { return a & b },
-                '||'(a, b) { return a || b },
-                '&&'(a, b) { return a && b },
-                '=='(a, b) { return a == b },
-                '!='(a, b) { return a != b },
-                '==='(a, b) { return a === b },
-                '!=='(a, b) { return a !== b },
-                '+='(a, b) { return a + b },
-                '-='(a, b) { return a - b },
-                '*='(a, b) { return a * b },
-                '/='(a, b) { return a * b },
-                '%='(a, b) { return a * b },
-                '>'(a, b) { return a > b },
-                '>='(a, b) { return a >= b },
-                '<'(a, b) { return a < b },
-                '<='(a, b) { return a <= b },
-                '>>'(a, b) { return a >> b },
-                '<<'(a, b) { return a << b },
-            }
-
             const key = Symbol.for(\`binary.\${OPERATOR}\`);
             const {result, hasOp} = ${binaryOp}(LEFT, RIGHT, key)
-            return hasOp ? result : primitives[OPERATOR](LEFT, RIGHT);
+            return hasOp ? result : ${primitivesId}[OPERATOR](LEFT, RIGHT);
         }
     `);
     return buildCall;
 }
 
 
-function uop(unaryOp) {
+function uop(unaryOp, primitivesId) {
     const buildCall = template(`
         function _uop(ARG, OPERATOR) {
-            const primitives = {
-                '+'(a) { return +a },
-                '-'(a) { return -a },
-                '++'(a) { return a++ },
-                '--'(a) { return a-- },
-                '~'(a) { return ~a },
-                '!'(a) { return !a },
-                'typeof'(a) { return typeof a },
-                'void'(a) { return void a }
-            }
-
             const key = Symbol.for(\`unary.\${OPERATOR}\`);
             const {result, hasOp} = ${unaryOp}(ARG, key);
-            return hasOp ? result : primitives[OPERATOR](ARG);
+            return hasOp ? result : ${primitivesId}[OPERATOR](ARG);
         }
     `);
     return buildCall;
@@ -118,13 +122,22 @@ export default function({types: t}) {
                 binaryNode.id = path.scope.generateUidIdentifierBasedOnNode(binaryNode.id);
                 unaryNode.id = path.scope.generateUidIdentifierBasedOnNode(unaryNode.id);
 
-                this.bop = bop(binaryNode.id.name)({
+                const binaryPrimitives = defineBinaryPrimitives()();
+                const unaryPrimitives = defineUnaryPrimitives()();
+                
+                binaryPrimitives.declarations[0].id = path.scope.generateUidIdentifierBasedOnNode(binaryPrimitives.declarations[0].id);
+                unaryPrimitives.declarations[0].id = path.scope.generateUidIdentifierBasedOnNode(unaryPrimitives.declarations[0].id);
+
+                console.log(binaryPrimitives);
+
+
+                this.bop = bop(binaryNode.id.name, binaryPrimitives.declarations[0].id.name)({
                     LEFT: path.scope.generateUidIdentifier("left"),
                     RIGHT: path.scope.generateUidIdentifier("right"),
                     OPERATOR: path.scope.generateUidIdentifier("operator")
                 })
 
-                this.uop = uop(unaryNode.id.name)({
+                this.uop = uop(unaryNode.id.name, unaryPrimitives.declarations[0].id.name)({
                     ARG: path.scope.generateUidIdentifier("arg"),
                     OPERATOR: path.scope.generateUidIdentifier("operator")
                 })
@@ -134,6 +147,10 @@ export default function({types: t}) {
 
                 path.unshiftContainer('body', binaryNode);
                 path.unshiftContainer('body', unaryNode);
+
+                path.unshiftContainer('body', binaryPrimitives);
+                path.unshiftContainer('body', unaryPrimitives);
+
                 path.unshiftContainer('body', this.bop);
                 path.unshiftContainer('body', this.uop);
             },
