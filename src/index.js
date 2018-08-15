@@ -69,8 +69,8 @@ function defineUnaryPrimitives() {
     return template(`const __unary__primitives = {
         '+'(a) { return +a },
         '-'(a) { return -a },
-        '++'(a) { return a++ },
-        '--'(a) { return a-- },
+        '++'(a) { return ++a },
+        '--'(a) { return --a },
         '~'(a) { return ~a },
         '!'(a) { return !a },
         'typeof'(a) { return typeof a },
@@ -127,9 +127,6 @@ export default function({types: t}) {
                 
                 binaryPrimitives.declarations[0].id = path.scope.generateUidIdentifierBasedOnNode(binaryPrimitives.declarations[0].id);
                 unaryPrimitives.declarations[0].id = path.scope.generateUidIdentifierBasedOnNode(unaryPrimitives.declarations[0].id);
-
-                console.log(binaryPrimitives);
-
 
                 this.bop = bop(binaryNode.id.name, binaryPrimitives.declarations[0].id.name)({
                     LEFT: path.scope.generateUidIdentifier("left"),
