@@ -1,40 +1,5 @@
 import template from "babel-template";
 
-function defineBinary() {
-    return template(`function __binary(LEFT, RIGHT, KEY) {
-        if (typeof LEFT !== 'undefined') {
-            const leftProto = Object.getPrototypeOf(LEFT);
-            const leftOp = leftProto.constructor[KEY];
-            if (leftOp && leftOp.length === 2) {
-                return { result: leftOp.call(leftProto.constructor, LEFT, RIGHT), hasOp: true };
-            }
-        }
-
-        if (typeof RIGHT !== 'undefined') {
-            const rightProto = Object.getPrototypeOf(RIGHT);
-            const rightOp = rightProto.constructor[KEY];
-            if (rightOp && rightOp.length === 2) {
-                return { result: rightOp.call(rightProto.constructor, LEFT, RIGHT), hasOp: true };
-            }
-        }
-
-        return { hasOp: false }
-    }`)
-}
-
-function defineUnary() {
-    return template(`function __unary(ARG, KEY) {
-        if (typeof ARG !== undefined) {
-            const proto = Object.getPrototypeOf(ARG);
-            const op = proto.constructor[KEY];
-            if (op && op.length === 1) {
-                return { result: op.call(proto.constructor, ARG), hasOp: true };
-            }
-        }
-        return {hasOp: false};
-    }`)
-}
-
 function defineBinaryPrimitives() {
     return template(`const __binary__primitives = {
         '+'(a, b) { return a + b },
@@ -78,24 +43,46 @@ function defineUnaryPrimitives() {
     }`);
 }
 
-function bop(binaryOp, primitivesId) {
+function bop(primitivesId) {
     const buildCall = template(`
         function _bop(LEFT, RIGHT, OPERATOR) {
             const key = Symbol.for(\`binary.\${OPERATOR}\`);
-            const {result, hasOp} = ${binaryOp}(LEFT, RIGHT, key)
-            return hasOp ? result : ${primitivesId}[OPERATOR](LEFT, RIGHT);
+
+            if (typeof LEFT !== 'undefined') {
+                const leftProto = Object.getPrototypeOf(LEFT);
+                const leftOp = leftProto.constructor[key];
+                if (leftOp && leftOp.length === 2) {
+                    return leftOp.call(leftProto.constructor, LEFT, RIGHT);
+                }
+            }
+    
+            if (typeof RIGHT !== 'undefined') {
+                const rightProto = Object.getPrototypeOf(RIGHT);
+                const rightOp = rightProto.constructor[key];
+                if (rightOp && rightOp.length === 2) {
+                    return rightOp.call(rightProto.constructor, LEFT, RIGHT);
+                }
+            }
+
+            return ${primitivesId}[OPERATOR](LEFT, RIGHT);
         }
     `);
     return buildCall;
 }
 
 
-function uop(unaryOp, primitivesId) {
+function uop(primitivesId) {
     const buildCall = template(`
         function _uop(ARG, OPERATOR) {
             const key = Symbol.for(\`unary.\${OPERATOR}\`);
-            const {result, hasOp} = ${unaryOp}(ARG, key);
-            return hasOp ? result : ${primitivesId}[OPERATOR](ARG);
+            if (typeof ARG !== 'undefined') {
+                const proto = Object.getPrototypeOf(ARG);
+                const op = proto.constructor[key];
+                if (op && op.length === 1) {
+                    return op.call(proto.constructor, ARG);
+                }
+            }
+            return ${primitivesId}[OPERATOR](ARG);
         }
     `);
     return buildCall;
@@ -108,42 +95,25 @@ export default function({types: t}) {
 
         visitor: {
             Program(path) {
-                const binaryNode = defineBinary()({
-                    LEFT: path.scope.generateUidIdentifier("left"),
-                    RIGHT: path.scope.generateUidIdentifier("right"),
-                    KEY: path.scope.generateUidIdentifier("key")
-                });
-
-                const unaryNode = defineUnary()({
-                    ARG: path.scope.generateUidIdentifier("arg"),
-                    KEY: path.scope.generateUidIdentifier("key")
-                })
-                
-                binaryNode.id = path.scope.generateUidIdentifierBasedOnNode(binaryNode.id);
-                unaryNode.id = path.scope.generateUidIdentifierBasedOnNode(unaryNode.id);
-
                 const binaryPrimitives = defineBinaryPrimitives()();
                 const unaryPrimitives = defineUnaryPrimitives()();
                 
                 binaryPrimitives.declarations[0].id = path.scope.generateUidIdentifierBasedOnNode(binaryPrimitives.declarations[0].id);
                 unaryPrimitives.declarations[0].id = path.scope.generateUidIdentifierBasedOnNode(unaryPrimitives.declarations[0].id);
 
-                this.bop = bop(binaryNode.id.name, binaryPrimitives.declarations[0].id.name)({
+                this.bop = bop(binaryPrimitives.declarations[0].id.name)({
                     LEFT: path.scope.generateUidIdentifier("left"),
                     RIGHT: path.scope.generateUidIdentifier("right"),
                     OPERATOR: path.scope.generateUidIdentifier("operator")
                 })
 
-                this.uop = uop(unaryNode.id.name, unaryPrimitives.declarations[0].id.name)({
+                this.uop = uop(unaryPrimitives.declarations[0].id.name)({
                     ARG: path.scope.generateUidIdentifier("arg"),
                     OPERATOR: path.scope.generateUidIdentifier("operator")
                 })
                 
                 this.bop.id = path.scope.generateUidIdentifierBasedOnNode(this.bop.id);
                 this.uop.id = path.scope.generateUidIdentifierBasedOnNode(this.uop.id);
-
-                path.unshiftContainer('body', binaryNode);
-                path.unshiftContainer('body', unaryNode);
 
                 path.unshiftContainer('body', binaryPrimitives);
                 path.unshiftContainer('body', unaryPrimitives);
