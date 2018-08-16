@@ -81,7 +81,7 @@ try {
 
 ## Controlling the naming convention
 
-By default the plugin expects keys for binary operators to be prefixed with 'binary' and keys for unary operators - with 'unary'. Users can supply options to change these prefixes. You can control through the plugin options by passing and object with a key 'prefixes' which has two propertires - 'binary' and 'unary' representing the binary and unary prefixes, for example:
+By default the plugin expects keys for binary operators to be prefixed with `binary` and keys for unary operators - with `unary`. Users can supply options to change these prefixes. You can control through the plugin options by passing and object with a key `prefixes` which has two propertires - `binary` and `unary` representing the binary and unary prefixes, for example:
 
 ```javascript
 {
