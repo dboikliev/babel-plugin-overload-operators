@@ -67,5 +67,5 @@ By default the plugin expects keys for binary operators to be prefixed with 'bin
 }
 ```
 
-This will make the plugin look for functions with keys `b.op` and `u.op`, for example `b.+' for the binary plus operator.
+This will make the plugin look for functions with keys `b.op` and `u.op`, for example `b.+` for the binary plus operator.
 This can be useful to prevent clashes with preexisting naming conventions in your code.
