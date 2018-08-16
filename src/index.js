@@ -1,45 +1,45 @@
 import template from "babel-template";
 
-function defineBinaryPrimitives() {
+function defineBinaryPrimitives(binaryPrefix) {
     return template(`const __binary__primitives = {
-        'binary.+'(a, b) { return a + b },
-        'binary.-'(a, b) { return a - b },
-        'binary.*'(a, b) { return a * b },
-        'binary./'(a, b) { return a / b },
-        'binary.%'(a, b) { return a / b },
-        'binary.^'(a, b) { return a ^ b },
-        'binary.|'(a, b) { return a | b },
-        'binary.&'(a, b) { return a & b },
-        'binary.||'(a, b) { return a || b },
-        'binary.&&'(a, b) { return a && b },
-        'binary.=='(a, b) { return a == b },
-        'binary.!='(a, b) { return a != b },
-        'binary.==='(a, b) { return a === b },
-        'binary.!=='(a, b) { return a !== b },
-        'binary.+='(a, b) { return a + b },
-        'binary.-='(a, b) { return a - b },
-        'binary.*='(a, b) { return a * b },
-        'binary./='(a, b) { return a * b },
-        'binary.%='(a, b) { return a * b },
-        'binary.>'(a, b) { return a > b },
-        'binary.>='(a, b) { return a >= b },
-        'binary.<'(a, b) { return a < b },
-        'binary.<='(a, b) { return a <= b },
-        'binary.>>'(a, b) { return a >> b },
-        'binary.<<'(a, b) { return a << b },
+        '${binaryPrefix}.+'(a, b) { return a + b },
+        '${binaryPrefix}.-'(a, b) { return a - b },
+        '${binaryPrefix}.*'(a, b) { return a * b },
+        '${binaryPrefix}./'(a, b) { return a / b },
+        '${binaryPrefix}.%'(a, b) { return a / b },
+        '${binaryPrefix}.^'(a, b) { return a ^ b },
+        '${binaryPrefix}.|'(a, b) { return a | b },
+        '${binaryPrefix}.&'(a, b) { return a & b },
+        '${binaryPrefix}.||'(a, b) { return a || b },
+        '${binaryPrefix}.&&'(a, b) { return a && b },
+        '${binaryPrefix}.=='(a, b) { return a == b },
+        '${binaryPrefix}.!='(a, b) { return a != b },
+        '${binaryPrefix}.==='(a, b) { return a === b },
+        '${binaryPrefix}.!=='(a, b) { return a !== b },
+        '${binaryPrefix}.+='(a, b) { return a + b },
+        '${binaryPrefix}.-='(a, b) { return a - b },
+        '${binaryPrefix}.*='(a, b) { return a * b },
+        '${binaryPrefix}./='(a, b) { return a * b },
+        '${binaryPrefix}.%='(a, b) { return a * b },
+        '${binaryPrefix}.>'(a, b) { return a > b },
+        '${binaryPrefix}.>='(a, b) { return a >= b },
+        '${binaryPrefix}.<'(a, b) { return a < b },
+        '${binaryPrefix}.<='(a, b) { return a <= b },
+        '${binaryPrefix}.>>'(a, b) { return a >> b },
+        '${binaryPrefix}.<<'(a, b) { return a << b },
     }`);
 }
 
-function defineUnaryPrimitives() {
+function defineUnaryPrimitives(unaryPrefix) {
     return template(`const __unary__primitives = {
-        'unary.+'(a) { return +a },
-        'unary.-'(a) { return -a },
-        'unary.++'(a) { return ++a },
-        'unary.--'(a) { return --a },
-        'unary.~'(a) { return ~a },
-        'unary.!'(a) { return !a },
-        'unary.typeof'(a) { return typeof a },
-        'unary.void'(a) { return void a }
+        '${unaryPrefix}.+'(a) { return +a },
+        '${unaryPrefix}.-'(a) { return -a },
+        '${unaryPrefix}.++'(a) { return ++a },
+        '${unaryPrefix}.--'(a) { return --a },
+        '${unaryPrefix}.~'(a) { return ~a },
+        '${unaryPrefix}.!'(a) { return !a },
+        '${unaryPrefix}.typeof'(a) { return typeof a },
+        '${unaryPrefix}.void'(a) { return void a }
     }`);
 }
 
@@ -75,13 +75,21 @@ function uop(primitivesId) {
 
 export default function({types: t}) {
     return {
-        pre(state) {
-        },
-
         visitor: {
-            Program(path) {
-                const binaryPrimitives = defineBinaryPrimitives()();
-                const unaryPrimitives = defineUnaryPrimitives()();
+            Program(path, state) {
+                const prefixes = state.opts.prefixes;
+                let unary = 'unary';
+                let binary = 'binary';
+                if (prefixes) {
+                    unary = prefixes.unary || unary;
+                    binary = prefixes.binary || binary;
+                }
+    
+                this.unaryPrefix = unary;
+                this.binaryPrefix = binary;
+
+                const binaryPrimitives = defineBinaryPrimitives(this.binaryPrefix)();
+                const unaryPrimitives = defineUnaryPrimitives(this.unaryPrefix)();
                 
                 binaryPrimitives.declarations[0].id = path.scope.generateUidIdentifierBasedOnNode(binaryPrimitives.declarations[0].id);
                 unaryPrimitives.declarations[0].id = path.scope.generateUidIdentifierBasedOnNode(unaryPrimitives.declarations[0].id);
@@ -120,7 +128,7 @@ export default function({types: t}) {
                     return
                 }
 
-                path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(`binary.${path.node.operator}`)]))
+                path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(`${this.binaryPrefix}.${path.node.operator}`)]))
             },
             
             UnaryExpression(path) {
@@ -129,7 +137,7 @@ export default function({types: t}) {
                     return;
                 }
 
-                const op = t.stringLiteral(`unary.${path.node.operator}`);
+                const op = t.stringLiteral(`${this.unaryPrefix}.${path.node.operator}`);
                 path.replaceWith(t.callExpression(this.uop.id, [path.node.argument, op]))
             },
 
@@ -139,7 +147,7 @@ export default function({types: t}) {
                     return;
                 }
 
-                const op = t.stringLiteral(`unary.${path.node.operator}`);
+                const op = t.stringLiteral(`${this.unaryPrefix}.${path.node.operator}`);
                 path.replaceWith(t.assignmentExpression("=", path.node.argument, t.callExpression(this.uop.id, [path.node.argument, op])));
             },
 
