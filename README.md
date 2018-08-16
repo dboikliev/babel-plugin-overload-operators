@@ -24,34 +24,65 @@ being overloaded, for example: `binary.+` to overload the binary plus operator.
 
 ```javascript
 class Vector {
-    constructor(x, y) {
-      this.x = x;
-      this.y = y;
-    }
-    
-    static 'binary.+'(v1, v2) {
-      return new Vector(v1.x + v2.x, v1.y + v2.y);
-    }
-    
-    static 'binary.-'(v1, v2) {
-      return new Vector(v1.x - v2.x, v1.y - v2.y);
-    }
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
   
-    static 'binary.*'(v, scale) {
-      if (typeof scale !== 'number') {
-        throw Error(`Cannot scale vector by a non-numeric factor '${scale}'`);
-      }
-      return new Vector(-v.x * scale, -v.y * scale);
-    }
+  static 'binary.+'(v1, v2) {
+    return new Vector(v1.x + v2.x, v1.y + v2.y);
+  }
   
-    static 'unary.-'(v) {
-      return new Vector(-v.x, -v.y);
-    }
- }
+  static 'binary.-'(v1, v2) {
+    return new Vector(v1.x - v2.x, v1.y - v2.y);
+  }
 
-let v = new Vector(1, 5);
-console.log(v * 5); // Vector { x: -5, y: -25 }
-console.log(-v); // Vector { x: -1, y: -5 }
+  static 'binary.*'(a, b) {
+    let scale;
+    let vector;
+
+    if (typeof a === 'number') {
+      scale = a;
+      vector = b;
+    }
+
+    if (typeof b === 'number') {
+      scale = b;
+      vector = a;
+    }
+
+    if (typeof scale !== 'number') {
+      throw Error(`Cannot scale vector by a non-numeric factor '${scale}'`);
+    }
+
+    return new Vector(-vector.x * scale, -vector.y * scale);
+  }
+
+  static 'unary.-'(v) {
+    return new Vector(-v.x, -v.y);
+  }
+
+  static 'unary.typeof'(v) {
+    return 'Vector';
+  }
+
+  toString() {
+    return `Vector { x: ${this.x}, y: ${this.y} }`;
+  }
+}
+
+try {
+  let v = new Vector(1, 5);
+  console.log(v); // Vector { x: 1, y: 5 }
+  console.log(-v); // Vector { x: -1, y: -5 }
+  console.log(v + v) // Vector { x: 2, y: 10 }
+  console.log(v * 5); // Vector { x: -5, y: -25 }
+  console.log(5 * v); // Vector { x: -5, y: -25 }
+  console.log(typeof v === 'Vector'); // true
+  console.log(v * v); 
+} catch (error) {
+  console.log(error); // Error: Cannot scale vector by a non-numeric factor 'undefined ...'
+}
 ```
 
 ## Controlling the naming convention
