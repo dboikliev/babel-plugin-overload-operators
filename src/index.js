@@ -2,68 +2,58 @@ import template from "babel-template";
 
 function defineBinaryPrimitives() {
     return template(`const __binary__primitives = {
-        '+'(a, b) { return a + b },
-        '-'(a, b) { return a - b },
-        '*'(a, b) { return a * b },
-        '/'(a, b) { return a / b },
-        '%'(a, b) { return a / b },
-        '^'(a, b) { return a ^ b },
-        '|'(a, b) { return a | b },
-        '&'(a, b) { return a & b },
-        '||'(a, b) { return a || b },
-        '&&'(a, b) { return a && b },
-        '=='(a, b) { return a == b },
-        '!='(a, b) { return a != b },
-        '==='(a, b) { return a === b },
-        '!=='(a, b) { return a !== b },
-        '+='(a, b) { return a + b },
-        '-='(a, b) { return a - b },
-        '*='(a, b) { return a * b },
-        '/='(a, b) { return a * b },
-        '%='(a, b) { return a * b },
-        '>'(a, b) { return a > b },
-        '>='(a, b) { return a >= b },
-        '<'(a, b) { return a < b },
-        '<='(a, b) { return a <= b },
-        '>>'(a, b) { return a >> b },
-        '<<'(a, b) { return a << b },
+        'binary.+'(a, b) { return a + b },
+        'binary.-'(a, b) { return a - b },
+        'binary.*'(a, b) { return a * b },
+        'binary./'(a, b) { return a / b },
+        'binary.%'(a, b) { return a / b },
+        'binary.^'(a, b) { return a ^ b },
+        'binary.|'(a, b) { return a | b },
+        'binary.&'(a, b) { return a & b },
+        'binary.||'(a, b) { return a || b },
+        'binary.&&'(a, b) { return a && b },
+        'binary.=='(a, b) { return a == b },
+        'binary.!='(a, b) { return a != b },
+        'binary.==='(a, b) { return a === b },
+        'binary.!=='(a, b) { return a !== b },
+        'binary.+='(a, b) { return a + b },
+        'binary.-='(a, b) { return a - b },
+        'binary.*='(a, b) { return a * b },
+        'binary./='(a, b) { return a * b },
+        'binary.%='(a, b) { return a * b },
+        'binary.>'(a, b) { return a > b },
+        'binary.>='(a, b) { return a >= b },
+        'binary.<'(a, b) { return a < b },
+        'binary.<='(a, b) { return a <= b },
+        'binary.>>'(a, b) { return a >> b },
+        'binary.<<'(a, b) { return a << b },
     }`);
 }
 
 function defineUnaryPrimitives() {
     return template(`const __unary__primitives = {
-        '+'(a) { return +a },
-        '-'(a) { return -a },
-        '++'(a) { return ++a },
-        '--'(a) { return --a },
-        '~'(a) { return ~a },
-        '!'(a) { return !a },
-        'typeof'(a) { return typeof a },
-        'void'(a) { return void a }
+        'unary.+'(a) { return +a },
+        'unary.-'(a) { return -a },
+        'unary.++'(a) { return ++a },
+        'unary.--'(a) { return --a },
+        'unary.~'(a) { return ~a },
+        'unary.!'(a) { return !a },
+        'unary.typeof'(a) { return typeof a },
+        'unary.void'(a) { return void a }
     }`);
 }
 
 function bop(primitivesId) {
     const buildCall = template(`
         function _bop(LEFT, RIGHT, OPERATOR) {
-            const key = Symbol.for(\`binary.\${OPERATOR}\`);
-
-            if (typeof LEFT !== 'undefined') {
-                const leftProto = Object.getPrototypeOf(LEFT);
-                const leftOp = leftProto.constructor[key];
-                if (leftOp && leftOp.length === 2) {
-                    return leftOp.call(leftProto.constructor, LEFT, RIGHT);
-                }
+            if (LEFT !== void 0 && LEFT.constructor[OPERATOR]) {
+                return LEFT.constructor[OPERATOR](LEFT, RIGHT);
             }
     
-            if (typeof RIGHT !== 'undefined') {
-                const rightProto = Object.getPrototypeOf(RIGHT);
-                const rightOp = rightProto.constructor[key];
-                if (rightOp && rightOp.length === 2) {
-                    return rightOp.call(rightProto.constructor, LEFT, RIGHT);
-                }
+            if (RIGHT !== void 0 && RIGHT.constructor[OPERATOR]) {
+                return RIGHT.constructor[OPERATOR](LEFT, RIGHT);
             }
-
+            
             return ${primitivesId}[OPERATOR](LEFT, RIGHT);
         }
     `);
@@ -74,13 +64,8 @@ function bop(primitivesId) {
 function uop(primitivesId) {
     const buildCall = template(`
         function _uop(ARG, OPERATOR) {
-            const key = Symbol.for(\`unary.\${OPERATOR}\`);
-            if (typeof ARG !== 'undefined') {
-                const proto = Object.getPrototypeOf(ARG);
-                const op = proto.constructor[key];
-                if (op && op.length === 1) {
-                    return op.call(proto.constructor, ARG);
-                }
+            if (ARG !== void 0 && ARG.constructor[OPERATOR]) {
+                return ARG.constructor[OPERATOR](ARG);
             }
             return ${primitivesId}[OPERATOR](ARG);
         }
@@ -135,7 +120,7 @@ export default function({types: t}) {
                     return
                 }
 
-                path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(path.node.operator)]))
+                path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(`binary.${path.node.operator}`)]))
             },
             
             UnaryExpression(path) {
@@ -144,7 +129,7 @@ export default function({types: t}) {
                     return;
                 }
 
-                const op = t.stringLiteral(path.node.operator);
+                const op = t.stringLiteral(`unary.${path.node.operator}`);
                 path.replaceWith(t.callExpression(this.uop.id, [path.node.argument, op]))
             },
 
@@ -154,7 +139,7 @@ export default function({types: t}) {
                     return;
                 }
 
-                const op = t.stringLiteral(path.node.operator);
+                const op = t.stringLiteral(`unary.${path.node.operator}`);
                 path.replaceWith(t.assignmentExpression("=", path.node.argument, t.callExpression(this.uop.id, [path.node.argument, op])));
             },
 
@@ -171,7 +156,7 @@ export default function({types: t}) {
                     return;
                 }
                 
-                const op = t.stringLiteral(operator.substring(0, 1));
+                const op = t.stringLiteral(`binary.${operator.substring(0, 1)}`);
                 const bopCall = t.callExpression(this.bop.id, [path.node.left, path.node.right, op]);
                 path.replaceWith(t.assignmentExpression("=", path.node.left, bopCall))
             },
