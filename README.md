@@ -2,7 +2,7 @@
 
 This projects builds a babel compiler plugin allowing users to write more consise and readable code through the use of operator overloading.
 
-## Supported operators 
+## Supported operators
 
 **Binary:**
 `+, -, *, /, %, |, &, ^, ||, &&, ==, ===, !=, !==, >, <, >=, <=, >>, <<, instanceof`
@@ -12,7 +12,6 @@ This projects builds a babel compiler plugin allowing users to write more consis
 
 **&ast;Assignment:**
 `+=, *=, /=, %=, |=, &=, ^=, >>=, <<=`
-
 
 **&ast;Note on assignement operators**:
 You cannot overload these operators directly. They are automatically supported once you implement an overload for their counterpart binary operator. For example if you implement `binary.+` you will be taking advantage of that operator when you use `lhs += rhs` as that will be turned to an expression of form `lhs = operation(lhs, rhs, '+')`.
@@ -38,13 +37,8 @@ class Vector {
   }
 
   static 'binary.*'(a, b) {
-    let scale;
-    let vector;
-
-    if (typeof a === 'number') {
-      scale = a;
-      vector = b;
-    }
+    let scale = a;
+    let vector = b;
 
     if (typeof b === 'number') {
       scale = b;
@@ -79,9 +73,9 @@ try {
   console.log(v * 5); // Vector { x: -5, y: -25 }
   console.log(5 * v); // Vector { x: -5, y: -25 }
   console.log(typeof v === 'Vector'); // true
-  console.log(v * v); 
+  console.log(v * v);
 } catch (error) {
-  console.log(error); // Error: Cannot scale vector by a non-numeric factor 'undefined' ...
+  console.log(error); // Error: Cannot scale vector by a non-numeric factor 'Vector { x: 1, y: 5 }'
 }
 ```
 
