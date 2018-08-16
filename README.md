@@ -11,7 +11,7 @@ This projects builds a babel compiler plugin allowing users to write more consis
 `+, -, ++, --, ~, !, typeof, void`
 
 **&ast;Assignment:**
-`+=, *=, /=, %=, |=, &=, ^= >>=, <<=`
+`+=, *=, /=, %=, |=, &=, ^=, >>=, <<=`
 
 
 **&ast;Note on assignement operators**:
