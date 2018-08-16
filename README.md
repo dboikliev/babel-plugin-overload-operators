@@ -23,8 +23,8 @@ you implement `binary.+` you will be taking advantage of that operator when you 
 
 ## Usage
 
-To overload an operator declare a static function in your class with a key `Symbol.for(op)`  where `op` is an the operator
-prefixed with either `unary.` or `binary.`. 
+To overload an operator declare a static function in your class with a key `binary.op` or `unary.op` where `op` is an the operator
+being overloaded, for example: `binary.+` to overload the binary plus operator. 
 
 ```javascript
 class Vector {
