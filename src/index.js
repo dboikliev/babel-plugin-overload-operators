@@ -171,7 +171,7 @@ export default function({types: t}) {
 
             TemplateLiteral(path) {
                 path.node.expressions = path.node.expressions && path.node.expressions.map(e => {
-                    return t.callExpression(t.memberExpression(e, t.identifier('toString')),[]);
+                    return t.callExpression(t.identifier('String'), [e]);
                 })
             }
         }
