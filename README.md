@@ -81,7 +81,7 @@ try {
   console.log(typeof v === 'Vector'); // true
   console.log(v * v); 
 } catch (error) {
-  console.log(error); // Error: Cannot scale vector by a non-numeric factor 'undefined' ...'
+  console.log(error); // Error: Cannot scale vector by a non-numeric factor 'undefined' ...
 }
 ```
 
