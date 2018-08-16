@@ -33,22 +33,22 @@ class Vector {
       this.y = y;
     }
     
-    static [Symbol.for('binary.+')](v1, v2) {
+    static 'binary.+'(v1, v2) {
       return new Vector(v1.x + v2.x, v1.y + v2.y);
     }
     
-    static [Symbol.for('binary.-')](v1, v2) {
+    static 'binary.-'(v1, v2) {
       return new Vector(v1.x - v2.x, v1.y - v2.y);
     }
   
-    static [Symbol.for('binary.*')](v, scale) {
+    static 'binary.*'(v, scale) {
       if (typeof scale !== 'number') {
         throw Error(`Cannot scale vector by a non-numeric factor '${scale}'`);
       }
       return new Vector(-v.x * scale, -v.y * scale);
     }
   
-    static [Symbol.for('unary.-')](v) {
+    static 'unary.-'(v) {
       return new Vector(-v.x, -v.y);
     }
  }
