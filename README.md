@@ -4,17 +4,17 @@ This projects builds a babel compiler plugin allowing users to write more consis
 
 ## Supported operators 
 
-**Binary**:
+**Binary:**
 `+, -, *, /, %, |, &, ^, ||, &&, ==, ===, !=, !==, >, <, >=, <=, >>, <<, instanceof`
 
-**Unary**:
+**Unary:**
 `+, -, ++, --, ~, !, typeof, void`
 
-&ast;**Assignment**:
+**&ast;Assignment:**
 `+=, *=, /=, %=, |=, &=, ^= >>=, <<=`
 
 
-&ast;**Note on assignement operators**:
+**&ast;Note on assignement operators**:
 You cannot overload these operators directly. They are automatically supported once you implement an overload for their counterpart binary operator. For example if you implement `binary.+` you will be taking advantage of that operator when you use `lhs += rhs` as that will be turned to an expression of form `lhs = operation(lhs, rhs, '+')`.
 
 ## Usage
