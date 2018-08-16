@@ -63,7 +63,7 @@ class Vector {
   }
 
   static 'unary.typeof'(v) {
-    return 'Vector';
+    return this.name;
   }
 
   toString() {
