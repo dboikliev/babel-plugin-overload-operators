@@ -37,19 +37,25 @@ class Vector {
   }
 
   static 'binary.*'(a, b) {
-    let scale = a;
-    let vector = b;
-
-    if (typeof b === 'number') {
-      scale = b;
-      vector = a;
+    if (typeof a === 'number' && typeof b === 'Vector') {
+      let scale = a;
+      let vector = b;
+      return new Vector(-vector.x * scale, -vector.y * scale);
     }
 
-    if (typeof scale !== 'number') {
-      throw Error(`Cannot scale vector by a non-numeric factor '${scale}'`);
+    if (typeof a === 'Vector' && typeof b === 'number') {
+      let scale = b;
+      let vector = a;
+      return new Vector(-vector.x * scale, -vector.y * scale);
     }
 
-    return new Vector(-vector.x * scale, -vector.y * scale);
+    if (typeof a === 'Vector') {
+      throw Error(`Cannot scale vector by a non-numeric factor '${b}'`);
+    }
+
+    if (typeof b === 'Vector') {
+      throw Error(`Cannot scale vector by a non-numeric factor '${a}'`);
+    }
   }
 
   static 'unary.-'(v) {
@@ -73,9 +79,9 @@ try {
   console.log(v * 5); // Vector { x: -5, y: -25 }
   console.log(5 * v); // Vector { x: -5, y: -25 }
   console.log(typeof v === 'Vector'); // true
-  console.log(v * v);
+  console.log(v * {});
 } catch (error) {
-  console.log(error); // Error: Cannot scale vector by a non-numeric factor 'Vector { x: 1, y: 5 }'
+  console.log(error); // Error: Cannot scale vector by a non-numeric factor '[object Object]'
 }
 ```
 
