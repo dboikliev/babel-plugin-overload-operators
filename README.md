@@ -79,7 +79,7 @@ try {
   console.log(v * 5); // Vector { x: 5, y: 25 }
   console.log(5 * v); // Vector { x: 5, y: 25 }
   console.log(typeof v === 'Vector'); // true
-  console.log(v * 'whaaaat');
+  console.log(v * {});
 } catch (error) {
   console.log(error); // Error: Cannot scale vector by a non-numeric factor '[object Object]'
 }
