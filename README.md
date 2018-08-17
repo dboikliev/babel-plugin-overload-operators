@@ -19,7 +19,7 @@ You cannot overload these operators directly. They are automatically supported o
 ## Usage
 
 To overload an operator declare a static function in your class with a key `binary.op` or `unary.op` where `op` is an the operator
-being overloaded, for example: `binary.+` to overload the binary plus operator. 
+being overloaded, for example: `binary.+` to overload the binary plus operator.
 
 ```javascript
 class Vector {
@@ -40,13 +40,13 @@ class Vector {
     if (typeof a === 'number' && typeof b === 'Vector') {
       let scale = a;
       let vector = b;
-      return new Vector(-vector.x * scale, -vector.y * scale);
+      return new Vector(vector.x * scale, vector.y * scale);
     }
 
     if (typeof a === 'Vector' && typeof b === 'number') {
       let scale = b;
       let vector = a;
-      return new Vector(-vector.x * scale, -vector.y * scale);
+      return new Vector(vector.x * scale, vector.y * scale);
     }
 
     if (typeof a === 'Vector') {
@@ -75,11 +75,11 @@ try {
   let v = new Vector(1, 5);
   console.log(v); // Vector { x: 1, y: 5 }
   console.log(-v); // Vector { x: -1, y: -5 }
-  console.log(v + v) // Vector { x: 2, y: 10 }
-  console.log(v * 5); // Vector { x: -5, y: -25 }
-  console.log(5 * v); // Vector { x: -5, y: -25 }
+  console.log(v + 5) // Vector { x: 2, y: 10 }
+  console.log(v * 5); // Vector { x: 5, y: 25 }
+  console.log(5 * v); // Vector { x: 5, y: 25 }
   console.log(typeof v === 'Vector'); // true
-  console.log(v * {});
+  console.log(v * 'whaaaat');
 } catch (error) {
   console.log(error); // Error: Cannot scale vector by a non-numeric factor '[object Object]'
 }
