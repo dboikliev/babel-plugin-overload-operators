@@ -46,11 +46,11 @@ function defineUnaryPrimitives(unaryPrefix) {
 function bop(primitivesId) {
     const buildCall = template(`
         function _bop(LEFT, RIGHT, OPERATOR) {
-            if (LEFT !== void 0 && LEFT.constructor[OPERATOR]) {
+            if (LEFT !== null && LEFT !== void 0 && LEFT.constructor[OPERATOR]) {
                 return LEFT.constructor[OPERATOR](LEFT, RIGHT);
             }
     
-            if (RIGHT !== void 0 && RIGHT.constructor[OPERATOR]) {
+            if (RIGHT !== null && RIGHT !== void 0 && RIGHT.constructor[OPERATOR]) {
                 return RIGHT.constructor[OPERATOR](LEFT, RIGHT);
             }
             
@@ -64,7 +64,7 @@ function bop(primitivesId) {
 function uop(primitivesId) {
     const buildCall = template(`
         function _uop(ARG, OPERATOR) {
-            if (ARG !== void 0 && ARG.constructor[OPERATOR]) {
+            if (ARG !== null && ARG !== void 0 && ARG.constructor[OPERATOR]) {
                 return ARG.constructor[OPERATOR](ARG);
             }
             return ${primitivesId}[OPERATOR](ARG);
