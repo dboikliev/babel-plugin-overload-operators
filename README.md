@@ -1,4 +1,4 @@
-# babel-operators
+# babel-plugin-operator-overloading
 
 This projects builds a babel compiler plugin allowing users to write more consise and readable code through the use of operator overloading.
 
