@@ -75,7 +75,7 @@ try {
   let v = new Vector(1, 5);
   console.log(v); // Vector { x: 1, y: 5 }
   console.log(-v); // Vector { x: -1, y: -5 }
-  console.log(v + 5) // Vector { x: 2, y: 10 }
+  console.log(v + v) // Vector { x: 2, y: 10 }
   console.log(v * 5); // Vector { x: 5, y: 25 }
   console.log(5 * v); // Vector { x: 5, y: 25 }
   console.log(typeof v === 'Vector'); // true
