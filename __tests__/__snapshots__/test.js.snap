@@ -7,179 +7,132 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\\"Cannot call a class as a function\\"); } }
 
-function _uop(_arg2, _operator2) {
-    const primitives = {
-        '+'(a) {
-            return +a;
-        },
-
-        '-'(a) {
-            return -a;
-        },
-
-        '++'(a) {
-            return a++;
-        },
-
-        '--'(a) {
-            return a--;
-        },
-
-        '~'(a) {
-            return ~a;
-        },
-
-        '!'(a) {
-            return !a;
-        },
-
-        'typeof'(a) {
-            return typeof a;
-        }
-
-    };
-    const key = Symbol.for(\`unary.\${_operator2}\`);
-
-    const {
-        result,
-        hasOp
-    } = _unary(_arg2, key);
-
-    return hasOp ? result : primitives[_operator2](_arg2);
-}
-
-function _bop(_left2, _right2, _operator) {
-    const primitives = {
-        '+'(a, b) {
-            return a + b;
-        },
-
-        '-'(a, b) {
-            return a - b;
-        },
-
-        '*'(a, b) {
-            return a * b;
-        },
-
-        '/'(a, b) {
-            return a / b;
-        },
-
-        '^'(a, b) {
-            return a ^ b;
-        },
-
-        '|'(a, b) {
-            return a | b;
-        },
-
-        '&'(a, b) {
-            return a & b;
-        },
-
-        '||'(a, b) {
-            return a || b;
-        },
-
-        '&&'(a, b) {
-            return a && b;
-        },
-
-        '=='(a, b) {
-            return a == b;
-        },
-
-        '!='(a, b) {
-            return a != b;
-        },
-
-        '==='(a, b) {
-            return a === b;
-        },
-
-        '!=='(a, b) {
-            return a !== b;
-        },
-
-        '+='(a, b) {
-            return a + b;
-        },
-
-        '-='(a, b) {
-            return a - b;
-        },
-
-        '*='(a, b) {
-            return a * b;
-        },
-
-        '/='(a, b) {
-            return a * b;
-        },
-
-        '='(a, b) {
-            return b;
-        }
-
-    };
-    const key = Symbol.for(\`binary.\${_operator}\`);
-
-    const {
-        result,
-        hasOp
-    } = _binary(_left2, _right2, key);
-
-    return hasOp ? result : primitives[_operator](_left2, _right2);
-}
-
-function _unary(_arg, _key2) {
-    if (typeof _arg !== undefined) {
-        var proto = Object.getPrototypeOf(_arg);
-        var op = proto.constructor[_key2];
-
-        if (op && op.length === 1) {
-            return {
-                result: op.call(proto.constructor, _arg),
-                hasOp: true
-            };
-        }
+function _uop(_arg, _operator2) {
+    if (_arg !== null && _arg !== void 0 && _arg.constructor[_operator2]) {
+        return _arg.constructor[_operator2](_arg);
     }
 
-    return {
-        hasOp: false
-    };
+    return _unary__primitives[_operator2](_arg);
 }
 
-function _binary(_left, _right, _key) {
-    if (typeof _left !== 'undefined') {
-        var leftProto = Object.getPrototypeOf(_left);
-        var leftOp = leftProto.constructor[_key];
-
-        if (leftOp && leftOp.length === 2) {
-            return {
-                result: leftOp.call(leftProto.constructor, _left, _right),
-                hasOp: true
-            };
-        }
+function _bop(_left, _right, _operator) {
+    if (_left !== null && _left !== void 0 && _left.constructor[_operator]) {
+        return _left.constructor[_operator](_left, _right);
     }
 
-    if (typeof _right !== 'undefined') {
-        var rightProto = Object.getPrototypeOf(_right);
-        var rightOp = rightProto.constructor[_key];
-
-        if (rightOp && rightOp.length === 2) {
-            return {
-                result: rightOp.call(rightProto.constructor, _left, _right),
-                hasOp: true
-            };
-        }
+    if (_right !== null && _right !== void 0 && _right.constructor[_operator]) {
+        return _right.constructor[_operator](_left, _right);
     }
 
-    return {
-        hasOp: false
-    };
+    return _binary__primitives[_operator](_left, _right);
 }
+
+var _unary__primitives = {
+    'unary.+': function unary(a) {
+        return +a;
+    },
+    'unary.-': function unary(a) {
+        return -a;
+    },
+    'unary.++': function unary(a) {
+        return ++a;
+    },
+    'unary.--': function unary(a) {
+        return --a;
+    },
+    'unary.~': function unary(a) {
+        return ~a;
+    },
+    'unary.!': function unary(a) {
+        return !a;
+    },
+    'unary.typeof': function unaryTypeof(a) {
+        return typeof a;
+    },
+    'unary.void': function unaryVoid(a) {
+        return void a;
+    }
+};
+var _binary__primitives = {
+    'binary.+': function binary(a, b) {
+        return a + b;
+    },
+    'binary.-': function binary(a, b) {
+        return a - b;
+    },
+    'binary.*': function binary(a, b) {
+        return a * b;
+    },
+    'binary./': function binary(a, b) {
+        return a / b;
+    },
+    'binary.%': function binary(a, b) {
+        return a / b;
+    },
+    'binary.^': function binary(a, b) {
+        return a ^ b;
+    },
+    'binary.|': function binary(a, b) {
+        return a | b;
+    },
+    'binary.&': function binary(a, b) {
+        return a & b;
+    },
+    'binary.||': function binary(a, b) {
+        return a || b;
+    },
+    'binary.&&': function binary(a, b) {
+        return a && b;
+    },
+    'binary.==': function binary(a, b) {
+        return a == b;
+    },
+    'binary.!=': function binary(a, b) {
+        return a != b;
+    },
+    'binary.===': function binary(a, b) {
+        return a === b;
+    },
+    'binary.!==': function binary(a, b) {
+        return a !== b;
+    },
+    'binary.+=': function binary(a, b) {
+        return a + b;
+    },
+    'binary.-=': function binary(a, b) {
+        return a - b;
+    },
+    'binary.*=': function binary(a, b) {
+        return a * b;
+    },
+    'binary./=': function binary(a, b) {
+        return a * b;
+    },
+    'binary.%=': function binary(a, b) {
+        return a * b;
+    },
+    'binary.>': function binary(a, b) {
+        return a > b;
+    },
+    'binary.>=': function binary(a, b) {
+        return a >= b;
+    },
+    'binary.<': function binary(a, b) {
+        return a < b;
+    },
+    'binary.<=': function binary(a, b) {
+        return a <= b;
+    },
+    'binary.>>': function binary(a, b) {
+        return a >> b;
+    },
+    'binary.<<': function binary(a, b) {
+        return a << b;
+    },
+    'binary.**': function binary(a, b) {
+        return a ** b;
+    }
+};
 
 var Vector = function () {
     function Vector(x, y) {
@@ -192,7 +145,7 @@ var Vector = function () {
     _createClass(Vector, null, [{
         key: Symbol.for('unary.+'),
         value: function value(a, b) {
-            return new Vector(_bop(a.x, b.x, '+'), _bop(a.y, b.y, '+'));
+            return new Vector(_bop(a.x, b.x, 'binary.+'), _bop(a.y, b.y, 'binary.+'));
         }
     }]);
 
@@ -200,6 +153,6 @@ var Vector = function () {
 }();
 
 var v = new Vector(1, 1);
-v = _uop(v, '--');
-v = _bop(v, 12, '+');"
+v = _uop(v, 'unary.--');
+v = _bop(v, 12, 'binary.+');"
 `;

@@ -27,7 +27,9 @@ function defineBinaryPrimitives(binaryPrefix) {
         '${binaryPrefix}.<='(a, b) { return a <= b },
         '${binaryPrefix}.>>'(a, b) { return a >> b },
         '${binaryPrefix}.<<'(a, b) { return a << b },
-        '${binaryPrefix}.**'(a, b) { return a ** b }
+        '${binaryPrefix}.**'(a, b) { return a ** b },
+        '${binaryPrefix}.instanceof'(a, b) { return a ** b },
+        '${binaryPrefix}.in'(a, b) { return a in b }
     }`);
 }
 
