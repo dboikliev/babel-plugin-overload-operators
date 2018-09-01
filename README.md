@@ -16,7 +16,15 @@ This projects builds a babel compiler plugin allowing users to write more consis
 **&ast;Note on assignement operators**:
 You cannot overload these operators directly. They are automatically supported once you implement an overload for their counterpart binary operator. For example if you implement `binary.+` you will be taking advantage of that operator when you use `lhs += rhs` as that will be turned to an expression of form `lhs = operation(lhs, rhs, 'binary.+')`.
 
+## Installation
+
+`npm install babel-operator-overloading`
+
 ## Usage
+
+In your `.babelrc` add the folllowing:`"plugins": ["babel-operator-overloading"]`
+
+## Examples
 
 To overload an operator declare a static function in your class with a key `binary.op` or `unary.op` where `op` is an the operator
 being overloaded, for example: `binary.+` to overload the binary plus operator.
