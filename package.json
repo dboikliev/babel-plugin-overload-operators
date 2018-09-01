@@ -1,29 +1,39 @@
 {
-  "name": "babel-operators",
+  "name": "babel-plugin-overload-operators",
   "version": "1.0.0",
   "description": "A Babel compiler plugin providing support for operator overloading.",
-  "main": "index.js",
+  "main": "dist/index.min.js",
+  "unpkg": "dist/index.min.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "jest -u",
-    "build": "babel src --out-dir dist"
+    "build": "babel src --out-dir dist",
+    "uglify": "uglifyjs dist/index.js -o dist/index.min.js -c -m",
+    "full-build": "npm run build && npm run uglify",
+    "prepare": "npm run full-build"
   },
   "jest": {
     "testEnvironment": "node"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dboikliev/babel-operators.git"
+    "url": "git+https://github.com/dboikliev/babel-plugin-overload-operators.git"
   },
-  "author": "Deyan Boikliev",
+  "author": "Deyan Boikliev <deyan.boikliev@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dboikliev/babel-operators/issues"
+    "url": "https://github.com/dboikliev/babel-plugin-overload-operators/issues"
   },
-  "homepage": "https://github.com/dboikliev/babel-operators#readme",
+  "homepage": "https://github.com/dboikliev/babel-plugin-overload-operators#readme",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
-    "babel-template": "^6.26.0",
+    "uglify-js": "^3.4.9",
     "jest": "^23.4.2"
+  },
+  "dependencies": {
+    "babel-template": "^6.26.0"
   }
 }

@@ -150,9 +150,5 @@ var Vector = function () {
     }]);
 
     return Vector;
-}();
-
-var v = new Vector(1, 1);
-v = _uop(v, 'unary.--');
-v = _bop(v, 12, 'binary.+');"
+}();"
 `;

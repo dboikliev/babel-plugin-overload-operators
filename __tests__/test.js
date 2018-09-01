@@ -12,12 +12,7 @@ class Vector {
     static [Symbol.for('unary.+')](a, b) {
         return new Vector(a.x + b.x, a.y + b.y);
     }
-}
-
-var v = new Vector(1,1);
-v--;
-v += 12;
-`;
+}`;
 
 it('works', () => {
   const {code} = babel.transform(example, {plugins: [plugin], presets: ["env"]});
