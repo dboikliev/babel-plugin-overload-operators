@@ -18,11 +18,11 @@ You cannot overload these operators directly. They are automatically supported o
 
 ## Installation
 
-`npm install babel-operator-overloading`
+`npm install babel-plugin-overload-operators`
 
 ## Usage
 
-In your `.babelrc` add the folllowing:`"plugins": ["babel-operator-overloading"]`
+In your `.babelrc` add the folllowing:`"plugins": ["babel-plugin-overload-operators"]`
 
 ## Examples
 
