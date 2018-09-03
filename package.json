@@ -4,6 +4,13 @@
   "description": "A Babel compiler plugin providing support for operator overloading.",
   "main": "dist/index.min.js",
   "unpkg": "dist/index.min.js",
+  "keywords": [
+    "babel",
+    "plugin",
+    "babel-plugin",
+    "operator",
+    "overload"
+  ],
   "files": [
     "dist"
   ],
