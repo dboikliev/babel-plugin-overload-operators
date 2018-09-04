@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-overload-operators",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "A Babel compiler plugin providing support for operator overloading.",
   "main": "dist/index.min.js",
   "unpkg": "dist/index.min.js",
