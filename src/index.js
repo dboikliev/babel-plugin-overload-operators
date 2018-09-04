@@ -1,4 +1,4 @@
-import template from "babel-template";
+import template from "@babel/template";
 
 function defineBinaryPrimitives(binaryPrefix) {
     return template(`const __binary__primitives = {
@@ -121,7 +121,7 @@ export default function({types: t}) {
             },
 
             BinaryExpression(path) {
-                if (path.node.hasOwnProperty('_fromTemplate')) {
+                if (path.node.loc == null) {
                     path.skip();
                     return
                 }
@@ -130,7 +130,7 @@ export default function({types: t}) {
             },
 
             LogicalExpression(path) {
-                if (path.node.hasOwnProperty('_fromTemplate')) {
+                if (path.node.loc == null) {
                     path.skip();
                     return
                 }
@@ -139,7 +139,7 @@ export default function({types: t}) {
             },
             
             UnaryExpression(path) {
-                if (path.node.hasOwnProperty('_fromTemplate')) {
+                if (path.node.loc == null) {
                     path.skip();
                     return;
                 }
@@ -149,7 +149,7 @@ export default function({types: t}) {
             },
 
             UpdateExpression(path) {
-                if (path.node.hasOwnProperty('_fromTemplate')) {
+                if (path.node.loc == null) {
                     path.skip();
                     return;
                 }
@@ -159,7 +159,7 @@ export default function({types: t}) {
             },
 
             AssignmentExpression(path) {
-                if (path.node.hasOwnProperty('_fromTemplate')) {
+                if (path.node.loc == null) {
                     path.skip();
                     return;
                 }
