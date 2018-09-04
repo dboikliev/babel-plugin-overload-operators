@@ -128,6 +128,15 @@ export default function({types: t}) {
 
                 path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(`${this.binaryPrefix}.${path.node.operator}`)]))
             },
+
+            LogicalExpression(path) {
+                if (path.node.hasOwnProperty('_fromTemplate')) {
+                    path.skip();
+                    return
+                }
+
+                path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(`${this.binaryPrefix}.${path.node.operator}`)]))
+            },
             
             UnaryExpression(path) {
                 if (path.node.hasOwnProperty('_fromTemplate')) {

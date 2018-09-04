@@ -35,10 +35,11 @@
   },
   "homepage": "https://github.com/dboikliev/babel-plugin-overload-operators#readme",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
-    "uglify-js": "^3.4.9",
-    "jest": "^23.4.2"
+    "jest": "^23.4.2",
+    "uglify-js": "^3.4.9"
   },
   "dependencies": {
     "babel-template": "^6.26.0"
