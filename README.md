@@ -36,10 +36,6 @@ class Vector {
     this.y = y;
   }
   
-  static 'unary.typeof'(v) {
-    return v.constructor.name;
-  }
-  
   static 'binary.+'(v1, v2) {
     return new Vector(v1.x + v2.x, v1.y + v2.y);
   }
