@@ -19,7 +19,7 @@
     "build": "babel src --out-dir dist",
     "uglify": "uglifyjs dist/index.js -o dist/index.min.js -c -m",
     "full-build": "npm run build && npm run uglify",
-    "prepare": "npm run full-build"
+    "prepare": "npm run full-build && npm test"
   },
   "jest": {
     "testEnvironment": "node"
