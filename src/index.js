@@ -120,16 +120,7 @@ export default function({types: t}) {
                 }
             },
 
-            BinaryExpression(path) {
-                if (path.node.loc == null) {
-                    path.skip();
-                    return
-                }
-
-                path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(`${this.binaryPrefix}.${path.node.operator}`)]))
-            },
-
-            LogicalExpression(path) {
+            'BinaryExpression|LogicalExpression'(path) {
                 if (path.node.loc == null) {
                     path.skip();
                     return
