@@ -155,14 +155,14 @@ export default function({types: t}) {
                     return;
                 }
 
+                const assignmentOperstors = new Set(['+=', '-=', '*=', '/=', '%=', '|=', '&=', '^=', '>>=', '<<=', '**='])
                 const operator = path.node.operator;
-                if (operator !== '+=' && operator !== '-=' &&
-                    operator !== '*=' && operator !== '~=' &&
-                    operator !== '/=' && operator !== '%=') {
+                if (!assignmentOperstors.has(operator)) {
                     return;
                 }
                 
-                const op = t.stringLiteral(`binary.${operator.substring(0, 1)}`);
+                const correspondingOperator = operator.substring(0, operator.length - 1);
+                const op = t.stringLiteral(`binary.${correspondingOperator}`);
                 const bopCall = t.callExpression(this.bop.id, [path.node.left, path.node.right, op]);
                 path.replaceWith(t.assignmentExpression("=", path.node.left, bopCall))
             },
