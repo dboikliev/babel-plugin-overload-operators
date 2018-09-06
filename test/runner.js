@@ -8,6 +8,7 @@ import { transformFileSync } from '@babel/core'
 
 describe('transformation tests', () => {
     const fixturesDir = 'test/fixtures'
+    const options = JSON.parse(fs.readFileSync('test/options.json')) || {}
     const fixtures = glob.sync(path.join(fixturesDir, '/*/'))
 
     fixtures.forEach(fixture => {
@@ -22,10 +23,7 @@ describe('transformation tests', () => {
             const expected = fs.readFileSync(expectedPath, 'utf8')
                 .replace(/\r\n/g, "\n");
 
-            const actual = transformFileSync(actualPath, {
-                presets: ["@babel/preset-env"],
-                plugins: ['./dist/index.js']
-            }).code;
+            const actual = transformFileSync(actualPath, options).code;
 
             assert.strictEqual(actual, expected);
         });
@@ -33,10 +31,7 @@ describe('transformation tests', () => {
         const execPath = path.join(fixture, 'exec.js');
         fs.existsSync(execPath) 
         && it(`${testName} executes correctly`, () => {
-            const exec = transformFileSync(execPath, {
-                presets: ["@babel/preset-env"],
-                plugins: ['./dist/index.js']
-            }).code;
+            const exec = transformFileSync(execPath, options).code;
 
             var context = vm.createContext({ require: require });
             vm.runInContext(exec, context);
