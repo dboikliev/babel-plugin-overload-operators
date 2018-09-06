@@ -12,18 +12,33 @@ describe('transformation tests', () => {
     fixtures.forEach(fixture => {
         const testName = testNameFromFixture(fixture);
 
-        it(`${testName} works`, () => {
-            const expectedPath = path.join(fixture, 'expected.js');
+        const expectedPath = path.join(fixture, 'expected.js');
+        const actualPath = path.join(fixture, 'actual.js');
+
+        fs.existsSync(expectedPath) 
+        && fs.existsSync(actualPath) 
+        && it(`${testName} transforms correctly`, () => {
             const expected = fs.readFileSync(expectedPath, 'utf8')
                 .replace(/\r\n/g, "\n");
 
-            const actualPath = path.join(fixture, 'actual.js');
             const actual = transformFileSync(actualPath, {
                 presets: ["@babel/preset-env"],
                 plugins: ['./dist/index.js']
             }).code;
 
             assert.strictEqual(actual, expected);
+        });
+
+        const execPath = path.join(fixture, 'exec.js');
+        fs.existsSync(execPath) 
+        && it(`${testName} executes correctly`, () => {
+            const exec = transformFileSync(execPath, {
+                presets: ["@babel/preset-env"],
+                plugins: ['./dist/index.js']
+            }).code;
+
+            eval(exec)
+            //assert.strictEqual(actual, expected);
         });
     })
 })
