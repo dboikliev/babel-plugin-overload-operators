@@ -2,6 +2,7 @@ import assert from 'assert';
 import glob from 'glob'
 import path from 'path'
 import fs from 'fs';
+import vm from 'vm';
 import { transformFileSync } from '@babel/core'
 
 
@@ -37,8 +38,8 @@ describe('transformation tests', () => {
                 plugins: ['./dist/index.js']
             }).code;
 
-            eval(exec)
-            //assert.strictEqual(actual, expected);
+            var context = vm.createContext({ require: require });
+            vm.runInContext(exec, context);
         });
     })
 })
