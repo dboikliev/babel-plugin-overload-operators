@@ -14,30 +14,35 @@ describe('transformation tests', () => {
     fixtures.forEach(fixture => {
         const testName = testNameFromFixture(fixture);
 
-        const expectedPath = path.join(fixture, 'expected.js');
-        const actualPath = path.join(fixture, 'actual.js');
+        testTransformation(fixture, testName, options);
+        testExecution(fixture, testName, options);
+    })
+})
 
-        fs.existsSync(expectedPath) 
-        && fs.existsSync(actualPath) 
-        && it(`${testName} transforms correctly`, () => {
+function testTransformation(fixture, testName, options) {
+    const expectedPath = path.join(fixture, 'expected.js');
+    const actualPath = path.join(fixture, 'actual.js');
+    if (fs.existsSync(expectedPath) && fs.existsSync(actualPath)) {
+        it(`${testName} transforms correctly`, () => {
             const expected = fs.readFileSync(expectedPath, 'utf8')
                 .replace(/\r\n/g, "\n");
-
             const actual = transformFileSync(actualPath, options).code;
-
             assert.strictEqual(actual, expected);
         });
+    }
+}
 
-        const execPath = path.join(fixture, 'exec.js');
-        fs.existsSync(execPath) 
-        && it(`${testName} executes correctly`, () => {
+function testExecution(fixture, testName, options) {
+    const execPath = path.join(fixture, 'exec.js');
+    if (fs.existsSync(execPath)) {
+        it(`${testName} executes correctly`, () => {
             const exec = transformFileSync(execPath, options).code;
-
             var context = vm.createContext({ require: require });
             vm.runInContext(exec, context);
         });
-    })
-})
+    }
+}
+
 
 function testNameFromFixture(fixture) {
     const parts = fixture.split('/');
