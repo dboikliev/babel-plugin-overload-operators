@@ -15,11 +15,12 @@
     "dist"
   ],
   "scripts": {
-    "test": "mocha ./test/runner.js --require @babel/register",
+    "lint": "eslint ./src",
     "build": "babel src --out-dir dist",
     "uglify": "uglifyjs dist/index.js -o dist/index.min.js -c -m",
+    "test": "mocha ./test/runner.js --require @babel/register",
     "full-build": "npm run build && npm run uglify",
-    "prepare": "npm run full-build && npm test"
+    "prepare": "npm run lint && npm run full-build && npm test"
   },
   "jest": {
     "testEnvironment": "node"
@@ -39,6 +40,7 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/register": "^7.0.0",
+    "eslint": "^5.5.0",
     "mocha": "^5.2.0",
     "uglify-js": "^3.4.9"
   },

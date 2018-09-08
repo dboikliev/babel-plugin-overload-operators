@@ -1,4 +1,4 @@
-import template from "@babel/template";
+import template from '@babel/template';
 
 function defineBinaryPrimitives(binaryPrefix) {
     return template(`const __binary__primitives = {
@@ -93,15 +93,15 @@ export default function({types: t}) {
                 unaryPrimitives.declarations[0].id = path.scope.generateUidIdentifierBasedOnNode(unaryPrimitives.declarations[0].id);
 
                 this.bop = bop(binaryPrimitives.declarations[0].id.name)({
-                    LEFT: path.scope.generateUidIdentifier("left"),
-                    RIGHT: path.scope.generateUidIdentifier("right"),
-                    OPERATOR: path.scope.generateUidIdentifier("operator")
-                })
+                    LEFT: path.scope.generateUidIdentifier('left'),
+                    RIGHT: path.scope.generateUidIdentifier('right'),
+                    OPERATOR: path.scope.generateUidIdentifier('operator')
+                });
 
                 this.uop = uop(unaryPrimitives.declarations[0].id.name)({
-                    ARG: path.scope.generateUidIdentifier("arg"),
-                    OPERATOR: path.scope.generateUidIdentifier("operator")
-                })
+                    ARG: path.scope.generateUidIdentifier('arg'),
+                    OPERATOR: path.scope.generateUidIdentifier('operator')
+                });
                 
                 this.bop.id = path.scope.generateUidIdentifierBasedOnNode(this.bop.id);
                 this.uop.id = path.scope.generateUidIdentifierBasedOnNode(this.uop.id);
@@ -123,10 +123,10 @@ export default function({types: t}) {
             'BinaryExpression|LogicalExpression'(path) {
                 if (path.node.loc == null) {
                     path.skip();
-                    return
+                    return;
                 }
 
-                path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(`${this.binaryPrefix}.${path.node.operator}`)]))
+                path.replaceWith(t.callExpression(this.bop.id, [path.node.left, path.node.right, t.stringLiteral(`${this.binaryPrefix}.${path.node.operator}`)]));
             },
             
             UnaryExpression(path) {
@@ -136,7 +136,7 @@ export default function({types: t}) {
                 }
 
                 const op = t.stringLiteral(`${this.unaryPrefix}.${path.node.operator}`);
-                path.replaceWith(t.callExpression(this.uop.id, [path.node.argument, op]))
+                path.replaceWith(t.callExpression(this.uop.id, [path.node.argument, op]));
             },
 
             UpdateExpression(path) {
@@ -146,7 +146,7 @@ export default function({types: t}) {
                 }
 
                 const op = t.stringLiteral(`${this.unaryPrefix}.${path.node.operator}`);
-                path.replaceWith(t.assignmentExpression("=", path.node.argument, t.callExpression(this.uop.id, [path.node.argument, op])));
+                path.replaceWith(t.assignmentExpression('=', path.node.argument, t.callExpression(this.uop.id, [path.node.argument, op])));
             },
 
             AssignmentExpression(path) {
@@ -155,7 +155,7 @@ export default function({types: t}) {
                     return;
                 }
 
-                const assignmentOperstors = new Set(['+=', '-=', '*=', '/=', '%=', '|=', '&=', '^=', '>>=', '<<=', '**='])
+                const assignmentOperstors = new Set(['+=', '-=', '*=', '/=', '%=', '|=', '&=', '^=', '>>=', '<<=', '**=']);
                 const operator = path.node.operator;
                 if (!assignmentOperstors.has(operator)) {
                     return;
@@ -164,14 +164,14 @@ export default function({types: t}) {
                 const correspondingOperator = operator.substring(0, operator.length - 1);
                 const op = t.stringLiteral(`binary.${correspondingOperator}`);
                 const bopCall = t.callExpression(this.bop.id, [path.node.left, path.node.right, op]);
-                path.replaceWith(t.assignmentExpression("=", path.node.left, bopCall))
+                path.replaceWith(t.assignmentExpression('=', path.node.left, bopCall));
             },
 
             TemplateLiteral(path) {
                 path.node.expressions = path.node.expressions && path.node.expressions.map(e => {
                     return t.callExpression(t.identifier('String'), [e]);
-                })
+                });
             }
         }
-    }
+    };
 }
