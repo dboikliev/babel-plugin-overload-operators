@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "lint": "eslint ./src",
+    "lint": "eslint ./src ./test/runner.js",
     "build": "babel src --out-dir dist",
     "uglify": "uglifyjs dist/index.js -o dist/index.min.js -c -m",
     "test": "mocha ./test/runner.js --require @babel/register",
