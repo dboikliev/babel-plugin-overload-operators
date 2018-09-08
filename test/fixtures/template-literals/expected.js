@@ -117,5 +117,5 @@ var _binary__primitives = {
     return a in b;
   }
 };
-"Some template ".concat(String(a), ".");
-"Some template ".concat(String(_bop(a, 1, "binary.+")), ".");
+"Some template ".concat(a, ".");
+"Some template ".concat(_bop(a, 1, "binary.+"), ".");

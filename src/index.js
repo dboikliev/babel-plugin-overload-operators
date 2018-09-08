@@ -165,12 +165,6 @@ export default function({types: t}) {
                 const op = t.stringLiteral(`binary.${correspondingOperator}`);
                 const bopCall = t.callExpression(this.bop.id, [path.node.left, path.node.right, op]);
                 path.replaceWith(t.assignmentExpression('=', path.node.left, bopCall));
-            },
-
-            TemplateLiteral(path) {
-                path.node.expressions = path.node.expressions && path.node.expressions.map(e => {
-                    return t.callExpression(t.identifier('String'), [e]);
-                });
             }
         }
     };
