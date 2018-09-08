@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/babel-plugin-overload-operators.svg)](https://badge.fury.io/js/babel-plugin-overload-operators)
 [![Build Status](https://travis-ci.org/dboikliev/babel-plugin-overload-operators.svg?branch=master)](https://travis-ci.org/dboikliev/babel-plugin-overload-operators)
+[![Coverage Status](https://coveralls.io/repos/github/dboikliev/babel-plugin-overload-operators/badge.svg?branch=master)](https://coveralls.io/github/dboikliev/babel-plugin-overload-operators?branch=master)
 
 This projects builds a babel compiler plugin allowing users to write more consise and readable code through the use of operator overloading.
 
