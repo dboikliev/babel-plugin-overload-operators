@@ -18,7 +18,8 @@
     "lint": "eslint ./src ./test/runner.js",
     "build": "babel src --out-dir dist",
     "uglify": "uglifyjs dist/index.js -o dist/index.min.js -c -m",
-    "test": "mocha ./test/runner.js --require @babel/register",
+    "test": "nyc --reporter=html --reporter=text mocha ./test/runner.js --require @babel/register",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "full-build": "npm run build && npm run uglify",
     "prepare": "npm run lint && npm run full-build && npm test"
   },
@@ -40,8 +41,10 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/register": "^7.0.0",
+    "coveralls": "^3.0.2",
     "eslint": "^5.5.0",
     "mocha": "^5.2.0",
+    "nyc": "^13.0.1",
     "uglify-js": "^3.4.9"
   },
   "dependencies": {
