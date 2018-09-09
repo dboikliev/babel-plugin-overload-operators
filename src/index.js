@@ -162,7 +162,7 @@ export default function({types: t}) {
                 }
                 
                 const correspondingOperator = operator.substring(0, operator.length - 1);
-                const op = t.stringLiteral(`binary.${correspondingOperator}`);
+                const op = t.stringLiteral(`${this.binaryPrefix}.${correspondingOperator}`);
                 const bopCall = t.callExpression(this.bop.id, [path.node.left, path.node.right, op]);
                 path.replaceWith(t.assignmentExpression('=', path.node.left, bopCall));
             }

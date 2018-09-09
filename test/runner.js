@@ -23,6 +23,11 @@ function testTransformation(fixture, testName, options) {
     const expectedPath = path.join(fixture, 'expected.js');
     const actualPath = path.join(fixture, 'actual.js');
     if (fs.existsSync(expectedPath) && fs.existsSync(actualPath)) {
+        const optionsPath = path.join(fixture, 'options.json');
+        if (fs.existsSync(optionsPath)) {
+            options = JSON.parse(fs.readFileSync(optionsPath, 'utf8'));
+        }
+
         it(`${testName} transforms correctly`, () => {
             const expected = fs.readFileSync(expectedPath, 'utf8')
                 .replace(/\r\n/g, '\n');
@@ -35,6 +40,11 @@ function testTransformation(fixture, testName, options) {
 function testExecution(fixture, testName, options) {
     const execPath = path.join(fixture, 'exec.js');
     if (fs.existsSync(execPath)) {
+        const optionsPath = path.join(fixture, 'options.json');
+        if (fs.existsSync(optionsPath)) {
+            options = JSON.parse(fs.readFileSync(optionsPath, 'utf8'));
+        }
+
         it(`${testName} executes correctly`, () => {
             const exec = transformFileSync(execPath, options).code;
             var context = vm.createContext({ require: require });

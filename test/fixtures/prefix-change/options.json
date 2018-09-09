@@ -1,0 +1,11 @@
+{
+    "presets": ["@babel/preset-env"],
+    "plugins": [
+        ["./src/index.js", {
+            "prefixes": {
+                "binary": "b",
+                "unary": "u"
+            }
+        }]
+    ]
+}
