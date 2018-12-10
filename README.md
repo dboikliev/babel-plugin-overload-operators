@@ -11,7 +11,7 @@ This projects builds a babel compiler plugin allowing users to write more consis
 `+, -, *, /, %, |, &, ^, ||, &&, ==, ===, !=, !==, >, <, >=, <=, >>, <<, **, instanceof, in`
 
 **Unary:**
-`+, -, ++, --, ~, !, typeof, void`
+`+, -, ~, !, typeof, void`
 
 **&ast;Assignment:**
 `+=, -=, *=, /=, %=, |=, &=, ^=, >>=, <<=, **=`
